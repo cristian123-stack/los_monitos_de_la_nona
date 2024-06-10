@@ -175,7 +175,7 @@ CREATE TABLE `factura` (
 CREATE TABLE `jefe_ventas` (
   `id_jefe_ventas` int(11) NOT NULL,
   `nombre` varchar(45) DEFAULT NULL,
-  `password` varchar(15) DEFAULT NULL,
+  `password` varchar(50) DEFAULT NULL,
   `fk_id_admin` int(11) DEFAULT NULL,
   `CREATEDAT` timestamp NOT NULL DEFAULT current_timestamp(),
   `UPDATEDAT` timestamp NULL DEFAULT NULL,
@@ -280,7 +280,7 @@ CREATE TABLE `vendedor` (
   `id_vendedor` int(11) NOT NULL,
   `nombre` varchar(45) NOT NULL,
   `fk_id_admin` int(11) DEFAULT NULL,
-  `password` varchar(15) NOT NULL,
+  `password` varchar(50) NOT NULL,
   `state_at` char(1) NOT NULL CHECK (`state_at` in ('Y','N')),
   `CREATEDAT` timestamp NOT NULL DEFAULT current_timestamp(),
   `UPDATEDAT` timestamp NULL DEFAULT NULL

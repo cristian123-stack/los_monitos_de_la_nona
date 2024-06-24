@@ -1,59 +1,155 @@
+import os
+import time
 import getpass
 import sys
-import time
-from admin import administrador
-from jefeventas import JefeVentas
-from vendedor import Vendedor
 from beautifultable import BeautifulTable
 from adminDao import AdminDao
 from jefeventasDao import JefeVentasDao
 from vendedorDao import VendedorDao
+from admin import administrador
+from jefeventas import JefeVentas
+from vendedor import Vendedor
+
+def cls():
+    os.system('cls' if os.name == 'nt' else 'clear')
 
 def mostrar_inicio_sesion():
+    cls()
     print("*****************************")
-    print("*      Inicio de Sesión     *")
+    print("*      INICIO DE SESIÓN     *")
+    print("*****LOS MONITOS DE LA NONA*****")
     print("*****************************")
 
 def mostrar_menu_admin():
+    cls()
     print("*****************************")
-    print("* Bienvenido al Menú de Administrador *")
+    print("*  Menú de Administrador     *")
+    print("*****************************")
+    table = BeautifulTable()
+    table.columns.header = ["Opción", "Descripción"]
+    table.rows.append(["1", "Opciones Jefe de Ventas"])
+    table.rows.append(["2", "Opciones Vendedor"])
+    table.rows.append(["3", "Administración de Inventario"])
+    table.rows.append(["4", "Opciones de ventas"])
+    table.rows.append(["5", "Volver al inicio de sesión"])
+    print(table)
+
+def mostrar_menu_jefe_ventas():
+    cls()
+    print("*****************************")
+    print("*  Menú de Jefe de Ventas    *")
+    print("*****************************")
+    table = BeautifulTable()
+    table.columns.header = ["Opción", "Descripción"]
+    table.rows.append(["1", "Menu productos e inventario"])
+    table.rows.append(["2", "Ventas"])
+    table.rows.append(["3", "Volver al inicio de sesión"])
+    print(table)
+
+def mostrar_menu_jefe_ventas_productos():
+    cls()
+    print("*****************************")
+    print("*  Menú de Jefe de Ventas    *")
+    print("*****************************")
+    table = BeautifulTable()
+    table.columns.header = ["Opción", "Descripción"]
+    table.rows.append(["1", "Agregar Producto"])
+    table.rows.append(["2", "Buscar producto"])
+    table.rows.append(["3", "Actualizar Productos"])
+    table.rows.append(["4", "Eliminar Producto"])
+    table.rows.append(["5", "Actualizar stock Producto"])
+    table.rows.append(["6", "Visualizar Inventario"])
+    table.rows.append(["7", "Volver al menú anterior"])
+    print(table)
+
+def mostrar_menu_vendedor():
+    cls()
+    print("*****************************")
+    print("*   Menú de Vendedor         *")
+    print("*****************************")
+    table = BeautifulTable()
+    table.columns.header = ["Opción", "Descripción"]
+    table.rows.append(["1", "Ventas con boleta"])
+    table.rows.append(["2", "Ventas con factura"])
+    table.rows.append(["3", "Devoluciones con boleta"])
+    table.rows.append(["4", "Devoluciones con factura"])
+    table.rows.append(["5", "Volver al inicio de sesión"])
+    print(table)
+
+def mostrar_submenu_jefe_ventas():
+    cls()
+    print("*****************************")
+    print("*   Opciones Jefe de Ventas  *")
     print("*****************************")
     table = BeautifulTable()
     table.columns.header = ["Opción", "Descripción"]
     table.rows.append(["1", "Crear Jefe de Ventas"])
-    table.rows.append(["2", "Crear Vendedor"])
-    table.rows.append(["3", "Actualizar Jefe de Ventas"])
-    table.rows.append(["4", "Actualizar Vendedor"])
-    table.rows.append(["5", "Mostrar Jefes de Ventas"])
-    table.rows.append(["6", "Mostrar Vendedores"])
-    table.rows.append(["7", "Eliminar Jefe de Ventas"])
-    table.rows.append(["8", "Eliminar Vendedor"])
-    table.rows.append(["9", "Volver al inicio de sesión"])
+    table.rows.append(["2", "Actualizar Jefe de Ventas"])
+    table.rows.append(["3", "Mostrar Jefes de Ventas"])
+    table.rows.append(["4", "Eliminar Jefe de Ventas"])
+    table.rows.append(["5", "Volver al menú anterior"])
     print(table)
 
-def mostrar_menu_jefe_ventas():
+def mostrar_submenu_vendedor():
+    cls()
     print("*****************************")
-    print("* Bienvenido al Menú de Jefe de Ventas *")
+    print("*     Opciones Vendedor      *")
     print("*****************************")
     table = BeautifulTable()
     table.columns.header = ["Opción", "Descripción"]
-    table.rows.append(["1", "Opción 1"])
-    table.rows.append(["2", "Opción 2"])
-    table.rows.append(["3", "Salir"])
+    table.rows.append(["1", "Crear Vendedor"])
+    table.rows.append(["2", "Actualizar Vendedor"])
+    table.rows.append(["3", "Mostrar Vendedores"])
+    table.rows.append(["4", "Eliminar Vendedor"])
+    table.rows.append(["5", "Volver al menú anterior"])
     print(table)
 
-def mostrar_menu_vendedor():
+def mostrar_submenu_admin_inventario():
+    cls()
+    print("************************************")
+    print("*   Opciones Administración Inventario   *")
+    print("************************************")
+    table = BeautifulTable()
+    table.columns.header = ["Opción", "Descripción"]
+    table.rows.append(["1", "Agregar Producto"])
+    table.rows.append(["2", "Buscar producto"])
+    table.rows.append(["3", "Actualizar Productos"])
+    table.rows.append(["4", "Eliminar Producto"])
+    table.rows.append(["5", "Actualizar stock Producto"])
+    table.rows.append(["6", "Visualizar Inventario"])
+    table.rows.append(["7", "Volver al menú anterior"])
+    print(table)
+
+def mostrar_submenu_ventas():
+    cls()
     print("*****************************")
-    print("* Bienvenido al Menú de Vendedor *")
+    print("*   Menú ventas         *")
     print("*****************************")
     table = BeautifulTable()
     table.columns.header = ["Opción", "Descripción"]
-    table.rows.append(["1", "Opción 1"])
-    table.rows.append(["2", "Opción 2"])
-    table.rows.append(["3", "Salir"])
+    table.rows.append(["1", "Ventas con boleta"])
+    table.rows.append(["2", "Ventas con factura"])
+    table.rows.append(["3", "Devoluciones con factura"])
+    table.rows.append(["4", "Devoluciones con boleta"])
+    table.rows.append(["5", "Volver al inicio de sesión"])
+    print(table)
+
+def mostrar_submenu_ventas_jf():
+    cls()
+    print("*****************************")
+    print("*   Menú ventas         *")
+    print("*****************************")
+    table = BeautifulTable()
+    table.columns.header = ["Opción", "Descripción"]
+    table.rows.append(["1", "Ventas con boleta"])
+    table.rows.append(["2", "Ventas con factura"])
+    table.rows.append(["3", "Devoluciones con factura"])
+    table.rows.append(["4", "Devoluciones con boleta"])
+    table.rows.append(["5", "Volver al inicio de sesión"])
     print(table)
 
 def opcion_ficticia():
+    cls()
     print("Ejecutando opción ficticia...")
     time.sleep(2)
 
@@ -63,11 +159,6 @@ def main():
 
     while usuario_obj is None:
         mostrar_inicio_sesion()
-        table = BeautifulTable()
-        table.columns.header = ["Campo", "Descripción"]
-        table.rows.append(["Usuario", "Ingrese su nombre de usuario"])
-        table.rows.append(["Contraseña", "Ingrese su contraseña"])
-        print(table)
 
         usuario = input("Ingrese su usuario: ")
         password = getpass.getpass("Ingrese su contraseña: ")
@@ -84,6 +175,7 @@ def main():
             usuario_obj = dao.buscarVendedor(usuario, password)
 
         if usuario_obj is None:
+            cls()
             print("Usuario o contraseña incorrectos. Por favor, inténtelo nuevamente.")
             time.sleep(3)
 
@@ -92,87 +184,225 @@ def main():
             mostrar_menu_admin()
             opcion = input("Seleccione una opción: ")
             if opcion == '1':
-                if dao.crearJefeVentas():
-                    print("Jefe de ventas creado exitosamente.")
-                else:
-                    print("Error al crear el Jefe de ventas.")
+                while True:
+                    mostrar_submenu_jefe_ventas()
+                    subopcion = input("Seleccione una opción: ")
+                    if subopcion == '1':
+                        if dao.crearJefeVentas():
+                            cls()
+                            print("Jefe de ventas creado exitosamente.")
+                        else:
+                            cls()
+                            print("Proceso cancelado, volviendo al menú.")
+                        time.sleep(2)
+                    elif subopcion == '2':
+                        if dao.actualizarJefeVentas():
+                            cls()
+                            print("Jefe de ventas actualizado exitosamente.")
+                        else:
+                            cls()
+                            print("Proceso cancelado, volviendo al menú.")
+                        time.sleep(2)
+                    elif subopcion == '3':
+                        jefes_ventas = dao.mostrarJefesVentas()
+                        cls()
+                        if jefes_ventas:
+                            table = BeautifulTable()
+                            table.columns.header = ['Nombre', 'Email', 'Teléfono']
+                            for jefe_ventas in jefes_ventas:
+                                table.rows.append(jefe_ventas)
+                            print("Lista de Jefes de Ventas:")
+                            print(table)
+                        else:
+                            print("No hay jefes de ventas registrados.")
+                        salir = input("Presione cualquier tecla para salir")
+                        if salir == any:
+                            break
+                    elif subopcion == '4':
+                        if dao.eliminarJefeVentas():
+                            cls()
+                            print("Jefe de ventas eliminado exitosamente.")
+                        else:
+                            cls()
+                            print("Proceso cancelado, volviendo al menú.")
+                        time.sleep(2)
+                    elif subopcion == '5':
+                        break
+                    else:
+                        cls()
+                        print("Opción no válida. Intente nuevamente.")
+                        time.sleep(2)
             elif opcion == '2':
-                if dao.crearVendedor():
-                    print("Vendedor creado exitosamente.")
-                else:
-                    print("Error al crear el Vendedor.")
+                while True:
+                    mostrar_submenu_vendedor()
+                    subopcion = input("Seleccione una opción: ")
+                    if subopcion == '1':
+                        if dao.crearVendedor():
+                            cls()
+                            print("Vendedor creado exitosamente.")
+                        else:
+                            cls()
+                            print("Proceso cancelado, volviendo al menú.")
+                        time.sleep(2)
+                    elif subopcion == '2':
+                        if dao.actualizarVendedor():
+                            cls()
+                            print("Vendedor actualizado exitosamente.")
+                        else:
+                            cls()
+                            print("Proceso cancelado, volviendo al menú.")
+                        time.sleep(2)
+                    elif subopcion == '3':
+                        vendedor = dao.mostrarVendedores()
+                        cls()
+                        if vendedor:
+                            table = BeautifulTable()
+                            table.columns.header = ['Nombre', 'Email', 'Teléfono']
+                            for vendedor in vendedor:
+                                table.rows.append(vendedor)
+                            print("Lista de vendedores:")
+                            print(table)
+                        else:
+                            print("No hay vendedores registrados.")
+                        salir = input("Presione cualquier tecla para salir")
+                        if salir == any:
+                            break
+                    elif subopcion == '4':
+                        if dao.eliminarVendedor():
+                            cls()
+                            print("Vendedor eliminado exitosamente.")
+                        else:
+                            cls()
+                            print("Proceso cancelado, volviendo al menú.")
+                        time.sleep(2)
+                    elif subopcion == '5':
+                        break
+                    else:
+                        cls()
+                        print("Opción no válida. Intente nuevamente.")
+                        time.sleep(2)
             elif opcion == '3':
-                if dao.actualizarJefeVentas():
-                    print("Jefe de ventas actualizado exitosamente.")
-                else:
-                    print("Error al actualizar el Jefe de ventas.")
+                while True:
+                    mostrar_submenu_admin_inventario()
+                    subopcion = input("Seleccione una opción: ")
+                    if subopcion == '1':
+                        dao.insertarProducto()
+                    elif subopcion == '2':
+                        dao.mostrarProductos()
+                    elif subopcion == '3':
+                        dao.actualizarProducto()
+                    elif subopcion == '4':
+                        dao.eliminarProducto()
+                    elif subopcion == '5':
+                        dao.actualizarStockProducto()
+                    elif subopcion == '6':
+                        dao.visualizarProductos()
+                    elif subopcion == '7':
+                        break
+                    else:
+                        cls()
+                        print("Opción no válida. Intente nuevamente.")
+                        time.sleep(2)
             elif opcion == '4':
-                if dao.actualizarVendedor():
-                    print("Vendedor actualizado exitosamente.")
-                else:
-                    print("Error al actualizar el Vendedor.")
-            elif opcion == '5':
-                jefes_ventas = dao.mostrarJefesVentas()
-                if jefes_ventas:
-                    print("Lista de Jefes de Ventas:")
-                    for jefe in jefes_ventas:
-                        print(jefe)  # Imprime cada jefe de ventas
-                else:
-                    print("No se encontraron Jefes de Ventas.")
-            elif opcion == '6':
-                vendedores = dao.mostrarVendedores()
-                if vendedores:
-                    print("Lista de Vendedores:")
-                    for vendedor in vendedores:
-                        print(vendedor)  # Imprime cada vendedor
-                else:
-                    print("No se encontraron Vendedores.")
-            elif opcion == '7':
-                if dao.eliminarJefeVentas():
-                    print("Jefe de ventas eliminado exitosamente.")
-                else:
-                    print("Error al eliminar el Jefe de ventas.")
-            elif opcion == '8':
-                if dao.eliminarVendedor():
-                    print("Vendedor eliminado exitosamente.")
-                else:
-                    print("Error al eliminar el Vendedor.")
-            elif opcion == '9':
+                while True:
+                    mostrar_submenu_ventas()
+                    subopcion = input("Seleccione una opción: ")
+                    if subopcion == '1':
+                        dao.realizarVentaConBoleta()
+                    elif subopcion == '2':
+                        dao.realizarVentaConFactura()
+                    elif subopcion == '3':
+                        dao.realizarDevolucionBoleta()
+                    elif subopcion == '4':
+                        dao.realizarDevolucionFactura()
+                    elif subopcion == '5':
+                        break
+                    else:
+                        cls()
+                        print("Opción no válida. Intente nuevamente.")
+                        time.sleep(2)
                 print("Volviendo al inicio de sesión...")
                 time.sleep(2)
-                return main()  # Volver al inicio de sesión
+                return main()
             else:
+                cls()
                 print("Opción no válida. Intente nuevamente.")
+                time.sleep(2)
 
     elif isinstance(usuario_obj, JefeVentas):
         while True:
             mostrar_menu_jefe_ventas()
             opcion = input("Seleccione una opción: ")
             if opcion == '1':
-                opcion_ficticia()
+                while True:
+                    mostrar_menu_jefe_ventas_productos()
+                    subopcion = input("Seleccione una opción: ")
+                    if subopcion == '1':
+                        dao.insertarProducto()
+                    elif subopcion == '2':
+                        dao.mostrarProductos()
+                    elif subopcion == '3':
+                        dao.actualizarProducto()
+                    elif subopcion == '4':
+                        dao.eliminarProducto()
+                    elif subopcion == '5':
+                        dao.actualizarStockProducto()
+                    elif subopcion == '6':
+                        dao.visualizarProductos()
+                    elif subopcion == '7':
+                        break
+                    else:
+                        cls()
+                        print("Opción no válida. Intente nuevamente.")
+                        time.sleep(2)
             elif opcion == '2':
-                opcion_ficticia()
+                while True:
+                    mostrar_submenu_ventas_jf()
+                    subopcion = input("Seleccione una opción: ")
+                    if subopcion == '1':
+                        dao.realizarVentaConBoleta()
+                    elif subopcion == '2':
+                        dao.realizarVentaConFactura()
+                    elif subopcion == '3':
+                        dao.realizarDevolucionFactura()
+                    elif subopcion == '4':
+                        dao.realizarDevolucionBoleta()
+                    elif subopcion == '5':
+                        break
+                    else:
+                        cls()
+                        print("Opción no válida. Intente nuevamente.")
+                        time.sleep(2)
             elif opcion == '3':
-                dao.desconectar(usuario_obj)
-                print("Saliendo...")
-                sys.exit()
+                print("Volviendo al inicio de sesión...")
+                time.sleep(2)
+                return main()
             else:
+                cls()
                 print("Opción no válida. Intente nuevamente.")
+                time.sleep(2)
 
     elif isinstance(usuario_obj, Vendedor):
         while True:
             mostrar_menu_vendedor()
             opcion = input("Seleccione una opción: ")
             if opcion == '1':
-                opcion_ficticia()
+                dao.realizarVentaConBoleta()
             elif opcion == '2':
-                opcion_ficticia()
+                dao.realizarVentaConFactura()
             elif opcion == '3':
-                dao.desconectar(usuario_obj)
-                print("Saliendo...")
-                sys.exit()
+                dao.realizarDevolucionFactura()
+            elif opcion == '4':
+                dao.realizarDevolucionBoleta()
+            elif opcion == '5':
+                print("Volviendo al inicio de sesión...")
+                time.sleep(2)
+                return main()
             else:
+                cls()
                 print("Opción no válida. Intente nuevamente.")
+                time.sleep(2)
 
 if __name__ == "__main__":
     main()
+

@@ -3,6 +3,7 @@ import time
 import hashlib
 from conexion import Conexion
 from admin import administrador
+from datetime import datetime
 
 
 
@@ -1619,3 +1620,166 @@ class AdminDao:
             print(f'Ha ocurrido el siguiente error: {e}')
             time.sleep(3)
             return False
+        
+    def mostrar_productos_caducidad_proxima(self):
+        try:
+            Conexion.getConnection()
+            if Conexion.cursor is None:
+                raise Exception("Error en la conexión a la base de datos.")
+
+        # Fecha actual
+            fecha_actual = datetime.now().date()
+
+        # Consulta para obtener los productos con sus fechas de elaboración y caducidad
+            Conexion.cursor.execute("SELECT id_producto, nombre, fecha_elaboracion, fecha_caducidad FROM producto")
+            productos = Conexion.cursor.fetchall()
+
+        # Lista para almacenar los productos con caducidad próxima
+            productos_caducidad_proxima = []
+
+        # Calcular los días restantes para cada producto
+            for producto in productos:
+                id_producto, nombre, fecha_elaboracion, fecha_caducidad = producto
+                dias_restantes = (fecha_caducidad - fecha_elaboracion).days
+
+                if dias_restantes <= 30:
+                    productos_caducidad_proxima.append({
+                        'id_producto': id_producto,
+                        'nombre': nombre,
+                        'dias_restantes': dias_restantes
+                    })
+
+        # Verificar si hay productos próximos a caducar
+            if productos_caducidad_proxima:
+                print("\nProductos con caducidad próxima:")
+                print("===================================")
+                for producto in productos_caducidad_proxima:
+                    print(f"ID: {producto['id_producto']}, Nombre: {producto['nombre']}, Días restantes: {producto['dias_restantes']}")
+                print("===================================")
+            else:
+                print("No hay productos que vayan a caducar en los próximos 30 días.")
+
+            input("Presione Enter para continuar...")
+
+        except Exception as e:
+            print(f'Ha ocurrido el siguiente error: {e}')
+            time.sleep(3)
+            return False
+        
+
+    def informe_ventas(self):
+        try:
+            Conexion.getConnection()
+            if Conexion.cursor is None:
+                raise Exception("Error en la conexión a la base de datos.")
+
+            # Solicitar fechas de inicio y fin
+            fecha_inicio_str = input("Indique fecha de inicio (YYYY-MM-DD): ")
+            fecha_final_str = input("Indique fecha final (YYYY-MM-DD): ")
+
+            # Convertir cadenas a objetos de fecha
+            fecha_inicio = datetime.strptime(fecha_inicio_str, '%Y-%m-%d').date()
+            fecha_final = datetime.strptime(fecha_final_str, '%Y-%m-%d').date()
+
+            # Consulta para obtener el total de ventas con boletas y facturas
+            Conexion.cursor.execute(
+                "SELECT 'Boleta' AS tipo, COUNT(*) AS cantidad, SUM(total) AS total "
+                "FROM boleta "
+                "WHERE fecha BETWEEN %s AND %s "
+                "UNION ALL "
+                "SELECT 'Factura' AS tipo, COUNT(*) AS cantidad, SUM(total) AS total "
+                "FROM factura "
+                "WHERE fecha BETWEEN %s AND %s ",
+                (fecha_inicio, fecha_final, fecha_inicio, fecha_final)
+            )
+            ventas = Conexion.cursor.fetchall()
+
+            # Consulta para obtener el total de notas de crédito
+            Conexion.cursor.execute(
+                "SELECT COUNT(*) AS cantidad, SUM(total) AS total "
+                "FROM nota_credito "
+                "WHERE fecha BETWEEN %s AND %s",
+                (fecha_inicio, fecha_final)
+            )
+            notas_credito = Conexion.cursor.fetchone()
+
+            # Mostrar el informe de ventas
+            print("\nInforme de Ventas:")
+            print("===================")
+            total_ventas = 0
+            total_notas_credito = 0
+            for venta in ventas:
+                tipo, cantidad, total = venta
+                if total is None:
+                    total = 0
+                print(f"{tipo}: Cantidad: {cantidad}, Total: {total}")
+                total_ventas += total
+
+            # Mostrar el total de notas de crédito
+            if notas_credito:
+                cantidad_nc, total_nc = notas_credito
+                if total_nc is None:
+                    total_nc = 0
+                print(f"Notas de Crédito: Cantidad: {cantidad_nc}, Total: {total_nc}")
+                total_notas_credito = total_nc
+            else:
+                print("Notas de Crédito: Cantidad: 0, Total: 0")
+
+            neto_ventas = total_ventas - total_notas_credito
+            print("===================")
+            print(f"Total Ventas (con notas de crédito aplicadas): {neto_ventas}")
+
+            # Preguntar si quiere desglosar
+            desglose = input("¿Quiere desglosar? (si/no): ").lower()
+            if desglose == 'si':
+                print("\nDesglose de Ventas y Notas de Crédito:")
+                print("=========================================")
+
+                # Desglose de boletas
+                Conexion.cursor.execute(
+                    "SELECT id_venta_boleta, total, fecha "
+                    "FROM boleta "
+                    "WHERE fecha BETWEEN %s AND %s",
+                    (fecha_inicio, fecha_final)
+                )
+                boletas = Conexion.cursor.fetchall()
+                print("\nBoletas:")
+                for boleta in boletas:
+                    id_venta_boleta, total, fecha = boleta
+                    print(f"ID: {id_venta_boleta}, Total: {total}, Fecha: {fecha}")
+
+                # Desglose de facturas
+                Conexion.cursor.execute(
+                    "SELECT id_venta_factura, total, fecha "
+                    "FROM factura "
+                    "WHERE fecha BETWEEN %s AND %s",
+                    (fecha_inicio, fecha_final)
+                )
+                facturas = Conexion.cursor.fetchall()
+                print("\nFacturas:")
+                for factura in facturas:
+                    id_venta_factura, total, fecha = factura
+                    print(f"ID: {id_venta_factura}, Total: {total}, Fecha: {fecha}")
+
+                # Desglose de notas de crédito
+                Conexion.cursor.execute(
+                    "SELECT id_nota_credito, total, fecha, motivo "
+                    "FROM nota_credito "
+                    "WHERE fecha BETWEEN %s AND %s",
+                    (fecha_inicio, fecha_final)
+                )
+                notas_credito_desglose = Conexion.cursor.fetchall()
+                print("\nNotas de Crédito:")
+                for nota_credito in notas_credito_desglose:
+                    id_nota_credito, total, fecha, motivo = nota_credito
+                    print(f"ID: {id_nota_credito}, Total: {total}, Fecha: {fecha}, Motivo: {motivo}")
+
+                print("=========================================")
+                input("Presione Enter para salir...")
+
+        except Exception as e:
+            print(f'Ha ocurrido el siguiente error: {e}')
+            print('Ingrese fechas validas')
+            time.sleep(3)
+            return False
+

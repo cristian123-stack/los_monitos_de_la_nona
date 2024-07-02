@@ -30,8 +30,9 @@ def mostrar_menu_admin():
     table.rows.append(["1", "Opciones Jefe de Ventas"])
     table.rows.append(["2", "Opciones Vendedor"])
     table.rows.append(["3", "Administración de Inventario"])
-    table.rows.append(["4", "Opciones de ventas"])
-    table.rows.append(["5", "Volver al inicio de sesión"])
+    table.rows.append(["4", "Opciones de Ventas"])
+    table.rows.append(["5", "Informes"])
+    table.rows.append(["6", "Volver al inicio de sesión"])
     print(table)
 
 def mostrar_menu_jefe_ventas():
@@ -41,25 +42,10 @@ def mostrar_menu_jefe_ventas():
     print("*****************************")
     table = BeautifulTable()
     table.columns.header = ["Opción", "Descripción"]
-    table.rows.append(["1", "Menu productos e inventario"])
-    table.rows.append(["2", "Ventas"])
-    table.rows.append(["3", "Volver al inicio de sesión"])
-    print(table)
-
-def mostrar_menu_jefe_ventas_productos():
-    cls()
-    print("*****************************")
-    print("*  Menú de Jefe de Ventas    *")
-    print("*****************************")
-    table = BeautifulTable()
-    table.columns.header = ["Opción", "Descripción"]
-    table.rows.append(["1", "Agregar Producto"])
-    table.rows.append(["2", "Buscar producto"])
-    table.rows.append(["3", "Actualizar Productos"])
-    table.rows.append(["4", "Eliminar Producto"])
-    table.rows.append(["5", "Actualizar stock Producto"])
-    table.rows.append(["6", "Visualizar Inventario"])
-    table.rows.append(["7", "Volver al menú anterior"])
+    table.rows.append(["1", "Administración de Productos"])
+    table.rows.append(["2", "Opciones de Ventas"])
+    table.rows.append(["3", "Informes"])
+    table.rows.append(["4", "Volver al inicio de sesión"])
     print(table)
 
 def mostrar_menu_vendedor():
@@ -69,11 +55,8 @@ def mostrar_menu_vendedor():
     print("*****************************")
     table = BeautifulTable()
     table.columns.header = ["Opción", "Descripción"]
-    table.rows.append(["1", "Ventas con boleta"])
-    table.rows.append(["2", "Ventas con factura"])
-    table.rows.append(["3", "Devoluciones con boleta"])
-    table.rows.append(["4", "Devoluciones con factura"])
-    table.rows.append(["5", "Volver al inicio de sesión"])
+    table.rows.append(["1", "Opciones de Ventas"])
+    table.rows.append(["2", "Salir"])
     print(table)
 
 def mostrar_submenu_jefe_ventas():
@@ -122,30 +105,40 @@ def mostrar_submenu_admin_inventario():
 
 def mostrar_submenu_ventas():
     cls()
-    print("*****************************")
-    print("*   Menú ventas         *")
-    print("*****************************")
+    print("************************************")
+    print("*   Opciones de Ventas   *")
+    print("************************************")
     table = BeautifulTable()
     table.columns.header = ["Opción", "Descripción"]
-    table.rows.append(["1", "Ventas con boleta"])
-    table.rows.append(["2", "Ventas con factura"])
-    table.rows.append(["3", "Devoluciones con factura"])
-    table.rows.append(["4", "Devoluciones con boleta"])
-    table.rows.append(["5", "Volver al inicio de sesión"])
+    table.rows.append(["1", "Realizar Venta con Boleta"])
+    table.rows.append(["2", "Realizar Venta con Factura"])
+    table.rows.append(["3", "Realizar Devolución con Factura"])
+    table.rows.append(["4", "Realizar Devolución con Boleta"])
+    table.rows.append(["5", "Volver al menú anterior"])
     print(table)
 
-def mostrar_submenu_ventas_jf():
+def mostrar_submenu_informes_admin():
     cls()
-    print("*****************************")
-    print("*   Menú ventas         *")
-    print("*****************************")
+    print("************************************")
+    print("*   Informes Administración   *")
+    print("************************************")
     table = BeautifulTable()
     table.columns.header = ["Opción", "Descripción"]
-    table.rows.append(["1", "Ventas con boleta"])
-    table.rows.append(["2", "Ventas con factura"])
-    table.rows.append(["3", "Devoluciones con factura"])
-    table.rows.append(["4", "Devoluciones con boleta"])
-    table.rows.append(["5", "Volver al inicio de sesión"])
+    table.rows.append(["1", "Informe de Ventas"])
+    table.rows.append(["2", "Productos con Caducidad Próxima"])
+    table.rows.append(["3", "Volver al menú anterior"])
+    print(table)
+
+def mostrar_submenu_informes_jefe_ventas():
+    cls()
+    print("************************************")
+    print("*   Informes Jefe de Ventas   *")
+    print("************************************")
+    table = BeautifulTable()
+    table.columns.header = ["Opción", "Descripción"]
+    table.rows.append(["1", "Informe de Ventas"])
+    table.rows.append(["2", "Productos con Caducidad Próxima"])
+    table.rows.append(["3", "Volver al menú anterior"])
     print(table)
 
 def opcion_ficticia():
@@ -216,7 +209,7 @@ def main():
                         else:
                             print("No hay jefes de ventas registrados.")
                         salir = input("Presione cualquier tecla para salir")
-                        if salir == any:
+                        if salir:
                             break
                     elif subopcion == '4':
                         if dao.eliminarJefeVentas():
@@ -265,7 +258,7 @@ def main():
                         else:
                             print("No hay vendedores registrados.")
                         salir = input("Presione cualquier tecla para salir")
-                        if salir == any:
+                        if salir:
                             break
                     elif subopcion == '4':
                         if dao.eliminarVendedor():
@@ -312,15 +305,30 @@ def main():
                     elif subopcion == '2':
                         dao.realizarVentaConFactura()
                     elif subopcion == '3':
-                        dao.realizarDevolucionBoleta()
-                    elif subopcion == '4':
                         dao.realizarDevolucionFactura()
+                    elif subopcion == '4':
+                        dao.realizarDevolucionBoleta()
                     elif subopcion == '5':
                         break
                     else:
                         cls()
                         print("Opción no válida. Intente nuevamente.")
                         time.sleep(2)
+            elif opcion == '5':
+                while True:
+                    mostrar_submenu_informes_admin()
+                    subopcion = input("Seleccione una opción: ")
+                    if subopcion == '1':
+                        dao.informe_ventas()
+                    elif subopcion == '2':
+                        dao.mostrar_productos_caducidad_proxima()
+                    elif subopcion == '3':
+                        break
+                    else:
+                        cls()
+                        print("Opción no válida. Intente nuevamente.")
+                        time.sleep(2)
+            elif opcion == '6':
                 print("Volviendo al inicio de sesión...")
                 time.sleep(2)
                 return main()
@@ -335,7 +343,7 @@ def main():
             opcion = input("Seleccione una opción: ")
             if opcion == '1':
                 while True:
-                    mostrar_menu_jefe_ventas_productos()
+                    mostrar_submenu_admin_inventario()
                     subopcion = input("Seleccione una opción: ")
                     if subopcion == '1':
                         dao.insertarProducto()
@@ -357,7 +365,7 @@ def main():
                         time.sleep(2)
             elif opcion == '2':
                 while True:
-                    mostrar_submenu_ventas_jf()
+                    mostrar_submenu_ventas()
                     subopcion = input("Seleccione una opción: ")
                     if subopcion == '1':
                         dao.realizarVentaConBoleta()
@@ -374,6 +382,20 @@ def main():
                         print("Opción no válida. Intente nuevamente.")
                         time.sleep(2)
             elif opcion == '3':
+                while True:
+                    mostrar_submenu_informes_jefe_ventas()
+                    subopcion = input("Seleccione una opción: ")
+                    if subopcion == '1':
+                        dao.informe_ventas()
+                    elif subopcion == '2':
+                        dao.mostrar_productos_caducidad_proxima()
+                    elif subopcion == '3':
+                        break
+                    else:
+                        cls()
+                        print("Opción no válida. Intente nuevamente.")
+                        time.sleep(2)
+            elif opcion == '4':
                 print("Volviendo al inicio de sesión...")
                 time.sleep(2)
                 return main()
@@ -387,14 +409,24 @@ def main():
             mostrar_menu_vendedor()
             opcion = input("Seleccione una opción: ")
             if opcion == '1':
-                dao.realizarVentaConBoleta()
+                while True:
+                    mostrar_submenu_ventas()
+                    subopcion = input("Seleccione una opción: ")
+                    if subopcion == '1':
+                        dao.realizarVentaConBoleta()
+                    elif subopcion == '2':
+                        dao.realizarVentaConFactura()
+                    elif subopcion == '3':
+                        dao.realizarDevolucionFactura()
+                    elif subopcion == '4':
+                        dao.realizarDevolucionBoleta()
+                    elif subopcion == '5':
+                        break
+                    else:
+                        cls()
+                        print("Opción no válida. Intente nuevamente.")
+                        time.sleep(2)
             elif opcion == '2':
-                dao.realizarVentaConFactura()
-            elif opcion == '3':
-                dao.realizarDevolucionFactura()
-            elif opcion == '4':
-                dao.realizarDevolucionBoleta()
-            elif opcion == '5':
                 print("Volviendo al inicio de sesión...")
                 time.sleep(2)
                 return main()

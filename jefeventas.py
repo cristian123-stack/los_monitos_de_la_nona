@@ -3,7 +3,7 @@ class JefeVentas:
         self.__nombre = ''
         self.__password = ''
         self.__conectado = False
-
+#obtiene el nombre
     @property
     def nombre(self) -> str:
         return self.__nombre
@@ -11,7 +11,7 @@ class JefeVentas:
     @nombre.setter
     def nombre(self, valor) -> None:
         self.__nombre = valor
-
+#obtiene la password
     @property
     def password(self) -> str:
         return self.__password
@@ -19,7 +19,7 @@ class JefeVentas:
     @password.setter
     def password(self, valor) -> None:
         self.__password = valor
-
+#obtiene la conexion 
     @property
     def conectado(self) -> bool:
         return self.__conectado

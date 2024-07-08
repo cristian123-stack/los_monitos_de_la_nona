@@ -112,6 +112,7 @@ class JefeVentasDao:
                 Conexion.cursor.execute(sentencia_proveedor, valores_proveedor)
                 Conexion.connection.commit()
                 print(f'Se ha registrado el nuevo proveedor: {nombre_prov}')
+                time.sleep(3)
 
             # Inserción del email del proveedor
                 email_prov = input("Ingrese el email del proveedor: ")
@@ -153,6 +154,7 @@ class JefeVentasDao:
             confirmar = input("Estos son los datos. ¿Desea ingresar el nuevo producto? (si/no): ")
             if confirmar.lower() != 'si':
                 print("Proceso cancelado, volviendo al menú.")
+                time.sleep(3)
                 return False
 
         # Inserción del producto en la tabla producto
@@ -166,6 +168,7 @@ class JefeVentasDao:
             Conexion.connection.commit()
 
             print(f'Se ha creado el producto: {nombre_producto}')
+            time.sleep(3)
 
         # Obtener el id del producto recién insertado
             Conexion.cursor.execute("SELECT id_producto FROM producto WHERE nombre=%s AND fk_rut_prov=%s ORDER BY CREATEDAT DESC LIMIT 1", (nombre_producto, rut_prov))
@@ -182,6 +185,7 @@ class JefeVentasDao:
                 id_bodega = int(input("Ingrese el ID de la bodega donde se almacenará el producto: "))
             else:
                 print("No hay bodegas registradas. Debe crear una.")
+                time.sleep(3)
                 nombre_bodega = input("Ingrese el nombre de la nueva bodega: ")
                 direccion_bodega = input("Ingrese la dirección de la nueva bodega: ")
 
@@ -196,6 +200,7 @@ class JefeVentasDao:
                 Conexion.connection.commit()
 
                 print(f'Se ha registrado la nueva bodega: {nombre_bodega}')
+                time.sleep(3)
 
             # Obtener el id de la bodega recién insertada
                 Conexion.cursor.execute("SELECT id_bodega FROM bodega WHERE nombre=%s ORDER BY CREATEDAT DESC LIMIT 1", (nombre_bodega,))
@@ -217,12 +222,14 @@ class JefeVentasDao:
 
         except Exception as e:
             print(f'Ha ocurrido el siguiente error: {e}')
+            print('Error de formato porfavor inicie nuevamente el proceso')
+            time.sleep(5)
             return False
 
 
 
 
-    def actualizarProducto(self) -> bool:
+    def actualizarProducto(self):
         try:
             Conexion.getConnection()
             if Conexion.cursor is None:
@@ -240,6 +247,7 @@ class JefeVentasDao:
 
                 if not productos:
                     print("No hay productos registrados.")
+                    time.sleep(3)
                     return False
 
                 print("Productos registrados:")
@@ -289,6 +297,7 @@ class JefeVentasDao:
 
                 if not campos_a_actualizar:
                     print("No se ha ingresado ningún dato para actualizar.")
+                    time.sleep(5)
                     return False
 
                 valores_a_actualizar.append(id_producto)
@@ -310,6 +319,7 @@ class JefeVentasDao:
 
                     if not bodegas:
                         print("No hay bodegas registradas.")
+                        time.sleep(5)
                         return False
 
                     print("Bodegas registradas:")
@@ -318,17 +328,30 @@ class JefeVentasDao:
 
                     id_bodega = int(input("Ingrese el ID de la nueva bodega para el producto: "))
 
-                # Actualizar la bodega con el producto
-                    sentencia_bodega = """
-                        UPDATE bodega
-                        SET fk_id_producto=%s, UPDATEDAT=CURRENT_TIMESTAMP
-                        WHERE id_bodega=%s
+                # Verificar si la relación ya existe
+                    Conexion.cursor.execute(
+                        "SELECT COUNT(*) FROM bodega_producto WHERE fk_id_producto=%s AND fk_id_bodega=%s",
+                        (id_producto, id_bodega)
+                    )
+                    relacion_existe = Conexion.cursor.fetchone()[0] > 0
+
+                    if relacion_existe:
+                        print("El producto ya está asignado a esta bodega.")
+                        time.sleep(3)
+                        return False
+
+                # Actualizar la relación en la tabla bodega_producto
+                    sentencia_bodega_producto = """
+                        INSERT INTO bodega_producto (fk_id_producto, fk_id_bodega, cantidad)
+                        VALUES (%s, %s, %s)
+                        ON DUPLICATE KEY UPDATE fk_id_bodega=VALUES(fk_id_bodega)
                     """
-                    valores_bodega = (id_producto, id_bodega)
-                    Conexion.cursor.execute(sentencia_bodega, valores_bodega)
+                    cantidad_producto = cantidad if cantidad else 0
+                    valores_bodega_producto = (id_producto, id_bodega, cantidad_producto)
+                    Conexion.cursor.execute(sentencia_bodega_producto, valores_bodega_producto)
                     Conexion.connection.commit()
 
-                    print(f'El producto con ID {id_producto} ha sido actualizado y asignado a la bodega con ID: {id_bodega}')
+                    print(f'El producto con ID {id_producto} ha sido asignado a la bodega con ID: {id_bodega}')
                     time.sleep(5)
                 else:
                     print(f'El producto con ID {id_producto} ha sido actualizado correctamente.')
@@ -337,12 +360,15 @@ class JefeVentasDao:
                 continuar = input("¿Desea continuar con la actualización de otro Producto? (si/no): ")
                 if continuar.lower() != 'si':
                     print("Proceso cancelado, volviendo al menú.")
+                    time.sleep(4)
                     return False
 
                 return True
 
         except Exception as e:
             print(f'Ha ocurrido el siguiente error: {e}')
+            print('Error de formato porfavor inicie nuevamente el proceso')
+            time.sleep(4)
             return False
 
 
@@ -377,6 +403,7 @@ class JefeVentasDao:
 
             if not producto_existe:
                 print("El producto no existe.")
+                time.sleep(5)
                 return False
 
             nueva_cantidad = int(input("Ingrese la nueva cantidad del producto: "))
@@ -392,16 +419,20 @@ class JefeVentasDao:
             Conexion.connection.commit()
 
             print(f'El stock del producto con ID {id_producto} ha sido actualizado a {nueva_cantidad} unidades.')
+            time.sleep(5)
 
             continuar = input("¿Desea continuar con la actualización de otro Producto? (si/no): ")
             if continuar.lower() != 'si':
                 print("Proceso cancelado, volviendo al menú.")
+                time.sleep(5)
                 return False
 
             return True
 
         except Exception as e:
             print(f'Ha ocurrido el siguiente error: {e}')
+            print('Error de formato porfavor inicie nuevamente el proceso')
+            time.sleep(5)
             return False
 
     def visualizarProductos(self) -> bool:
@@ -438,6 +469,7 @@ class JefeVentasDao:
 
         except Exception as e:
             print(f'Ha ocurrido el siguiente error: {e}')
+            print('Error de formato porfavor inicie nuevamente el proceso')
             return False
 
 
@@ -476,11 +508,13 @@ class JefeVentasDao:
 
             if not producto_existe:
                 print("El producto no existe.")
+                time.sleep(5)
                 return False
 
             confirmar = input("¿Está seguro de que desea eliminar el producto? (si/no): ")
             if confirmar.lower() != 'si':
                 print("Proceso cancelado, volviendo al menú.")
+                time.sleep(3)
                 return False
 
         # Eliminar registros de la tabla bodega_producto
@@ -492,10 +526,13 @@ class JefeVentasDao:
             Conexion.connection.commit()
 
             print(f'El producto con ID {id_producto} ha sido eliminado correctamente.')
+            time.sleep(5)
             return True
 
         except Exception as e:
             print(f'Ha ocurrido el siguiente error: {e}')
+            print('Error de formato porfavor inicie nuevamente el proceso')
+            time.sleep(5)
             return False
 
 
@@ -535,6 +572,8 @@ class JefeVentasDao:
 
         except Exception as e:
             print(f'Ha ocurrido el siguiente error: {e}')
+            print('Error de formato porfavor inicie nuevamente el proceso')
+            time.sleep(5)
             return False
 
 
@@ -543,59 +582,96 @@ class JefeVentasDao:
             Conexion.getConnection()
             if Conexion.cursor is None:
                 raise Exception("Error en la conexión a la base de datos.")
+        
+            Conexion.cursor.execute("SELECT COUNT(*) FROM vendedor WHERE state_at = 'n'")
+            vendedores_cerrados = Conexion.cursor.fetchone()[0]
 
-            # Solicitar ID del vendedor
+            Conexion.cursor.execute("SELECT COUNT(*) FROM jefe_ventas WHERE state_at = 'n'")
+            jefes_ventas_cerrados = Conexion.cursor.fetchone()[0]
+
+            if vendedores_cerrados > 0 or jefes_ventas_cerrados > 0:
+                print("Debe abrir ventas para poder continuar.")
+                time.sleep(3)
+                return
+
+        # Solicitar ID del vendedor
             id_vendedor = input("Ingrese el ID del vendedor que realiza la venta: ")
-            
-            # Verificar si el vendedor existe
+        
+        # Verificar si el vendedor existe
             Conexion.cursor.execute("SELECT COUNT(*) FROM vendedor WHERE id_vendedor=%s", (id_vendedor,))
             if Conexion.cursor.fetchone()[0] == 0:
                 print("ID de vendedor no válido.")
                 time.sleep(3)
                 return
 
-            # Solicitar RUT del cliente
+        # Solicitar RUT del cliente
             rut_cliente = input("Ingrese el Rut del cliente (dejar en blanco si no tiene): ")
             if rut_cliente:
-                # Verificar si el cliente existe
+            # Verificar si el cliente existe
                 Conexion.cursor.execute("SELECT nombre_cliente FROM cliente WHERE rut_cliente=%s", (rut_cliente,))
                 cliente = Conexion.cursor.fetchone()
                 if cliente:
                     print(f"Cliente encontrado: {cliente[0]}")
                 else:
-                    # Solicitar datos del nuevo cliente
+                # Solicitar datos del nuevo cliente
                     nombre_cliente = input("Ingrese el nombre del cliente: ")
                     if len(rut_cliente) > 10:
                         print("El RUT no debe tener más de 10 caracteres.")
                         time.sleep(3)
                         return
+                
+                    direccion_cliente = input("Ingrese la dirección del cliente: ")
 
-                    # Insertar nuevo cliente
+                # Insertar nuevo cliente
                     Conexion.cursor.execute(
-                        "INSERT INTO cliente (rut_cliente, nombre_cliente, CREATEDAT, UPDATEDAT) VALUES (%s, %s, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)",
-                        (rut_cliente, nombre_cliente)
+                        "INSERT INTO cliente (rut_cliente, nombre_cliente, direccion_cliente, CREATEDAT, UPDATEDAT) VALUES (%s, %s, %s, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)",
+                        (rut_cliente, nombre_cliente, direccion_cliente)
                     )
                     Conexion.connection.commit()
                     print("Cliente registrado correctamente.")
                     time.sleep(3)
+
+                # Solicitar teléfono del cliente
+                    telefono_cliente = input("Ingrese el teléfono del cliente: ")
+
+                # Insertar teléfono del cliente
+                    Conexion.cursor.execute(
+                        "INSERT INTO telefono_cliente (telefono, fk_rut_cliente, CREATEDAT, UPDATEDAT) VALUES (%s, %s, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)",
+                        (telefono_cliente, rut_cliente)
+                    )
+                    Conexion.connection.commit()
+                    print("Teléfono registrado correctamente.")
+                    time.sleep(3)
+
+                # Solicitar email del cliente
+                    email_cliente = input("Ingrese el email del cliente: ")
+
+                # Insertar email del cliente
+                    Conexion.cursor.execute(
+                        "INSERT INTO email_cliente (email, fk_rut_cliente, CREATEDAT, UPDATEDAT) VALUES (%s, %s, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)",
+                        (email_cliente, rut_cliente)
+                    )
+                    Conexion.connection.commit()
+                    print("Email registrado correctamente.")
+                    time.sleep(3)
             else:
                 rut_cliente = None
 
-            # Mostrar productos disponibles
+        # Mostrar productos disponibles
             Conexion.cursor.execute("SELECT id_producto, nombre, valor_unitario, cantidad FROM producto WHERE cantidad > 0")
             productos = Conexion.cursor.fetchall()
             print("Productos disponibles:")
             for producto in productos:
                 print(f"ID: {producto[0]}, Nombre: {producto[1]}, Precio: {producto[2]}, Cantidad disponible: {producto[3]}")
 
-            # Solicitar productos a vender
+        # Solicitar productos a vender
             detalle_venta = []
             while True:
                 id_producto = input("Ingrese el ID del producto a vender (fin para terminar): ")
                 if id_producto.lower() == 'fin':
                     break
 
-                # Verificar si el producto existe y tiene stock suficiente
+            # Verificar si el producto existe y tiene stock suficiente
                 Conexion.cursor.execute("SELECT nombre, valor_unitario, cantidad FROM producto WHERE id_producto=%s", (id_producto,))
                 producto = Conexion.cursor.fetchone()
                 if producto:
@@ -603,20 +679,22 @@ class JefeVentasDao:
                     cantidad = int(input(f"Ingrese la cantidad de '{nombre_producto}' a vender: "))
                     if cantidad > stock:
                         print("Cantidad insuficiente en el stock.")
+                        time.sleep(3)
                         continue
 
                     detalle_venta.append((id_producto, cantidad))
                 else:
                     print("ID de producto no válido.")
+                    time.sleep(3)
 
-            # Confirmar venta
+        # Confirmar venta
             confirmar = input("¿Desea confirmar la venta? (si/no): ").lower()
             if confirmar != 'si':
                 print("Venta cancelada.")
                 time.sleep(3)
                 return
 
-            # Calcular totales
+        # Calcular totales
             subtotal = 0
             for id_producto, cantidad in detalle_venta:
                 Conexion.cursor.execute("SELECT valor_unitario FROM producto WHERE id_producto=%s", (id_producto,))
@@ -626,17 +704,17 @@ class JefeVentasDao:
             total = subtotal + iva
             fecha_venta = time.strftime('%Y-%m-%d')
 
-            # Insertar boleta
+        # Insertar boleta
             Conexion.cursor.execute(
                 "INSERT INTO boleta (fk_id_vendedor, fk_id_cliente, subtotal, iva, total, fecha, CREATEDAT, UPDATEDAT) VALUES (%s, %s, %s, %s, %s, %s, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)",
                 (id_vendedor, rut_cliente, subtotal, iva, total, fecha_venta)
             )
             Conexion.connection.commit()
 
-            # Obtener el ID de la boleta insertada
+        # Obtener el ID de la boleta insertada
             id_boleta = Conexion.cursor.lastrowid
 
-            # Insertar detalles de la venta
+        # Insertar detalles de la venta
             for id_producto, cantidad in detalle_venta:
                 Conexion.cursor.execute(
                     "INSERT INTO detalle_venta (id_venta_boleta, id_producto, cantidad, CREATEDAT, UPDATEDAT) VALUES (%s, %s, %s, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)",
@@ -644,7 +722,7 @@ class JefeVentasDao:
                 )
             Conexion.connection.commit()
 
-            # Descontar productos del stock
+        # Descontar productos del stock
             for id_producto, cantidad in detalle_venta:
                 Conexion.cursor.execute(
                     "UPDATE producto SET cantidad = cantidad - %s WHERE id_producto = %s",
@@ -652,7 +730,7 @@ class JefeVentasDao:
                 )
             Conexion.connection.commit()
 
-            # Mostrar boleta detallada
+        # Mostrar boleta detallada
             print("\nBoleta Detallada:")
             print("===================================")
             for id_producto, cantidad in detalle_venta:
@@ -669,72 +747,112 @@ class JefeVentasDao:
             print(f"Total: ${total}")
             print("===================================")
             input("Presione Enter para imprimir...")
-            print("Impriendo boleta")
+            print("Imprimiendo boleta")
             time.sleep(3)
 
         except Exception as e:
             print(f'Ha ocurrido el siguiente error: {e}')
+            print('Error de formato porfavor inicie nuevamente el proceso')
             time.sleep(3)
             return False
-        
+
+
     def realizarVentaConFactura(self):
         try:
             Conexion.getConnection()
             if Conexion.cursor is None:
                 raise Exception("Error en la conexión a la base de datos.")
+        
+            Conexion.cursor.execute("SELECT COUNT(*) FROM vendedor WHERE state_at = 'n'")
+            vendedores_cerrados = Conexion.cursor.fetchone()[0]
 
-            # Solicitar ID del vendedor
+            Conexion.cursor.execute("SELECT COUNT(*) FROM jefe_ventas WHERE state_at = 'n'")
+            jefes_ventas_cerrados = Conexion.cursor.fetchone()[0]
+
+            if vendedores_cerrados > 0 or jefes_ventas_cerrados > 0:
+                print("Debe abrir ventas para poder continuar.")
+                time.sleep(3)
+                return
+
+        # Solicitar ID del vendedor
             id_vendedor = input("Ingrese el ID del vendedor que realiza la venta: ")
-            
-            # Verificar si el vendedor existe
+        
+        # Verificar si el vendedor existe
             Conexion.cursor.execute("SELECT COUNT(*) FROM vendedor WHERE id_vendedor=%s", (id_vendedor,))
             if Conexion.cursor.fetchone()[0] == 0:
                 print("ID de vendedor no válido.")
                 time.sleep(3)
                 return
 
-            # Solicitar RUT del cliente
+        # Solicitar RUT del cliente
             rut_cliente = input("Ingrese el Rut del cliente (dejar en blanco si no tiene): ")
             if rut_cliente:
-                # Verificar si el cliente existe
+            # Verificar si el cliente existe
                 Conexion.cursor.execute("SELECT nombre_cliente FROM cliente WHERE rut_cliente=%s", (rut_cliente,))
                 cliente = Conexion.cursor.fetchone()
                 if cliente:
                     print(f"Cliente encontrado: {cliente[0]}")
                 else:
-                    # Solicitar datos del nuevo cliente
+                # Solicitar datos del nuevo cliente
                     nombre_cliente = input("Ingrese el nombre del cliente: ")
                     if len(rut_cliente) > 10:
                         print("El RUT no debe tener más de 10 caracteres.")
                         time.sleep(3)
                         return
+                
+                    direccion_cliente = input("Ingrese la dirección del cliente: ")
 
-                    # Insertar nuevo cliente
+                # Insertar nuevo cliente
                     Conexion.cursor.execute(
-                        "INSERT INTO cliente (rut_cliente, nombre_cliente, CREATEDAT, UPDATEDAT) VALUES (%s, %s, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)",
-                        (rut_cliente, nombre_cliente)
+                        "INSERT INTO cliente (rut_cliente, nombre_cliente, direccion_cliente, CREATEDAT, UPDATEDAT) VALUES (%s, %s, %s, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)",
+                        (rut_cliente, nombre_cliente, direccion_cliente)
                     )
                     Conexion.connection.commit()
                     print("Cliente registrado correctamente.")
                     time.sleep(3)
+
+                    # Solicitar teléfono del cliente
+                    telefono_cliente = input("Ingrese el teléfono del cliente: ")
+
+                    # Insertar teléfono del cliente
+                    Conexion.cursor.execute(
+                        "INSERT INTO telefono_cliente (telefono, fk_rut_cliente, CREATEDAT, UPDATEDAT) VALUES (%s, %s, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)",
+                        (telefono_cliente, rut_cliente)
+                    )
+                    Conexion.connection.commit()
+                    print("Teléfono registrado correctamente.")
+                    time.sleep(3)
+
+                # Solicitar email del cliente
+                    email_cliente = input("Ingrese el email del cliente: ")
+
+                # Insertar email del cliente
+                    Conexion.cursor.execute(
+                        "INSERT INTO email_cliente (email, fk_rut_cliente, CREATEDAT, UPDATEDAT) VALUES (%s, %s, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)",
+                        (email_cliente, rut_cliente)
+                    )
+                    Conexion.connection.commit()
+                    print("Email registrado correctamente.")
+                    time.sleep(3)
+
             else:
                 rut_cliente = None
 
-            # Mostrar productos disponibles
+        # Mostrar productos disponibles
             Conexion.cursor.execute("SELECT id_producto, nombre, valor_unitario, cantidad FROM producto WHERE cantidad > 0")
             productos = Conexion.cursor.fetchall()
             print("Productos disponibles:")
             for producto in productos:
                 print(f"ID: {producto[0]}, Nombre: {producto[1]}, Precio: {producto[2]}, Cantidad disponible: {producto[3]}")
 
-            # Solicitar productos a vender
+        # Solicitar productos a vender
             detalle_venta = []
             while True:
                 id_producto = input("Ingrese el ID del producto a vender (fin para terminar): ")
                 if id_producto.lower() == 'fin':
                     break
 
-                # Verificar si el producto existe y tiene stock suficiente
+            # Verificar si el producto existe y tiene stock suficiente
                 Conexion.cursor.execute("SELECT nombre, valor_unitario, cantidad FROM producto WHERE id_producto=%s", (id_producto,))
                 producto = Conexion.cursor.fetchone()
                 if producto:
@@ -742,20 +860,22 @@ class JefeVentasDao:
                     cantidad = int(input(f"Ingrese la cantidad de '{nombre_producto}' a vender: "))
                     if cantidad > stock:
                         print("Cantidad insuficiente en el stock.")
+                        time.sleep(3)
                         continue
 
                     detalle_venta.append((id_producto, cantidad))
                 else:
                     print("ID de producto no válido.")
+                    time.sleep(3)
 
-            # Confirmar venta
+        # Confirmar venta
             confirmar = input("¿Desea confirmar la venta? (si/no): ").lower()
             if confirmar != 'si':
                 print("Venta cancelada.")
                 time.sleep(3)
                 return
 
-            # Calcular totales
+        # Calcular totales
             subtotal = 0
             for id_producto, cantidad in detalle_venta:
                 Conexion.cursor.execute("SELECT valor_unitario FROM producto WHERE id_producto=%s", (id_producto,))
@@ -765,7 +885,7 @@ class JefeVentasDao:
             total = subtotal + iva
             fecha_venta = time.strftime('%Y-%m-%d')
 
-            # Insertar factura
+        # Insertar factura
             Conexion.cursor.execute(
                 "INSERT INTO factura (fk_id_vendedor, fk_id_cliente, subtotal, iva, total, fecha, CREATEDAT, UPDATEDAT) VALUES (%s, %s, %s, %s, %s, %s, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)",
                 (id_vendedor, rut_cliente, subtotal, iva, total, fecha_venta)
@@ -775,7 +895,7 @@ class JefeVentasDao:
             # Obtener el ID de la factura insertada
             id_factura = Conexion.cursor.lastrowid
 
-            # Insertar detalles de la venta
+        # Insertar detalles de la venta
             for id_producto, cantidad in detalle_venta:
                 Conexion.cursor.execute(
                     "INSERT INTO detalle_venta (id_venta_factura, id_producto, cantidad, CREATEDAT, UPDATEDAT) VALUES (%s, %s, %s, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)",
@@ -791,7 +911,7 @@ class JefeVentasDao:
                 )
             Conexion.connection.commit()
 
-            # Mostrar factura detallada
+        # Mostrar factura detallada
             print("\nFactura Detallada:")
             print("===================================")
             for id_producto, cantidad in detalle_venta:
@@ -813,6 +933,7 @@ class JefeVentasDao:
 
         except Exception as e:
             print(f'Ha ocurrido el siguiente error: {e}')
+            print('Error de formato porfavor inicie nuevamente el proceso')
             time.sleep(3)
             return False
 
@@ -841,6 +962,7 @@ class JefeVentasDao:
                 cliente = Conexion.cursor.fetchone()
                 if cliente:
                     print(f"Cliente encontrado: {cliente[0]}")
+                    time.sleep(2)
                 else:
                     print("Cliente no encontrado.")
                     time.sleep(3)
@@ -955,6 +1077,7 @@ class JefeVentasDao:
 
         except Exception as e:
             print(f'Ha ocurrido el siguiente error: {e}')
+            print('Error de formato porfavor inicie nuevamente el proceso')
             time.sleep(3)
             return False
         
@@ -1098,6 +1221,7 @@ class JefeVentasDao:
 
         except Exception as e:
             print(f'Ha ocurrido el siguiente error: {e}')
+            print('Error de formato porfavor inicie nuevamente el proceso')
             time.sleep(3)
             return False
 
@@ -1144,6 +1268,7 @@ class JefeVentasDao:
 
         except Exception as e:
             print(f'Ha ocurrido el siguiente error: {e}')
+            print('Error de formato porfavor inicie nuevamente el proceso')
             time.sleep(3)
             return False
         
@@ -1262,3 +1387,243 @@ class JefeVentasDao:
             print('Ingresa fechas validas')
             time.sleep(3)
             return False
+
+    def abrir_ventas() -> bool:
+        try:
+            Conexion.getConnection()
+            if Conexion.cursor is None:
+                raise Exception("Error en la conexión a la base de datos.")
+
+        # Actualizar estado de los vendedores
+            sentencia_vendedor = "UPDATE vendedor SET state_at = 'y' WHERE state_at = 'n'"
+            Conexion.cursor.execute(sentencia_vendedor)
+            Conexion.connection.commit()
+
+        # Actualizar estado de los jefes de ventas
+            sentencia_jefe_ventas = "UPDATE jefe_ventas SET state_at = 'y' WHERE state_at = 'n'"
+            Conexion.cursor.execute(sentencia_jefe_ventas)
+            Conexion.connection.commit()
+
+            print("Ventas abiertas exitosamente.")
+            time.sleep(3)
+            return True
+
+        except Exception as e:
+            print(f'Ha ocurrido el siguiente error: {e}')
+            print('Error de formato porfavor inicie nuevamente el proceso')
+            time.sleep(3)
+            return False
+        
+    def cerrar_ventas() -> bool:
+        try:
+            Conexion.getConnection()
+            if Conexion.cursor is None:
+                raise Exception("Error en la conexión a la base de datos.")
+
+        # Actualizar estado de los vendedores
+            sentencia_vendedor = "UPDATE vendedor SET state_at = 'n' WHERE state_at = 'y'"
+            Conexion.cursor.execute(sentencia_vendedor)
+            Conexion.connection.commit()
+
+        # Actualizar estado de los jefes de ventas
+            sentencia_jefe_ventas = "UPDATE jefe_ventas SET state_at = 'n' WHERE state_at = 'y'"
+            Conexion.cursor.execute(sentencia_jefe_ventas)
+            Conexion.connection.commit()
+
+            print("Ventas cerradas exitosamente.")
+            time.sleep(3)
+            return True
+
+        except Exception as e:
+            print(f'Ha ocurrido el siguiente error: {e}')
+            print('Error de formato porfavor inicie nuevamente el proceso')
+            time.sleep(3)
+            return False
+
+
+    def mostrar_mis_datos_jefe_ventas(self):
+        try:
+            Conexion.getConnection()
+            if Conexion.cursor is None:
+                raise Exception("Error en la conexión a la base de datos.")
+        
+            nombre = input("Ingrese el nombre del jefe de ventas: ")
+        
+        # Consulta para obtener datos del jefe ventas
+            consulta = "SELECT id_jefe_ventas, nombre FROM jefe_ventas WHERE nombre=%s"
+            Conexion.cursor.execute(consulta, (nombre,))
+            jefe_ventas = Conexion.cursor.fetchone()
+        
+            if jefe_ventas:
+                id_jefe_ventas, nombre_jefe_ventas = jefe_ventas
+                print(f"ID: {id_jefe_ventas}, Nombre: {nombre_jefe_ventas}")
+                time.sleep(5)
+            else:
+                print("Jefe ventas no encontrado.")
+                time.sleep(3)
+
+        except Exception as e:
+            print(f'Ha ocurrido el siguiente error: {e}')
+            print('Error de formato porfavor inicie nuevamente el proceso')
+            time.sleep(3)
+            return False
+
+    def mostrar_mis_datos_vendedor(self):
+        try:
+            Conexion.getConnection()
+            if Conexion.cursor is None:
+                raise Exception("Error en la conexión a la base de datos.")
+        
+            nombre = input("Ingrese el nombre del vendedor: ")
+        
+        # Consulta para obtener datos del vendedor
+            consulta = "SELECT id_vendedor, nombre FROM vendedor WHERE nombre=%s"
+            Conexion.cursor.execute(consulta, (nombre,))
+            vendedor = Conexion.cursor.fetchone()
+        
+            if vendedor:
+                id_vendedor, nombre_vendedor = vendedor
+                print(f"ID: {id_vendedor}, Nombre: {nombre_vendedor}")
+                time.sleep(5)
+            else:
+                print("Vendedor no encontrado.")
+                time.sleep(3)
+
+        except Exception as e:
+            print(f'Ha ocurrido el siguiente error: {e}')
+            print('Error de formato porfavor inicie nuevamente el proceso')
+            time.sleep(3)
+            return False
+        
+    def buscar_cliente_y_compras(self):
+        try:
+            Conexion.getConnection()
+            if Conexion.cursor is None:
+                raise Exception("Error en la conexión a la base de datos.")
+        
+        # Paso 1: Pedir al usuario que ingrese el rut del cliente
+            rut_cliente = input("Ingrese el rut del cliente: ")
+        
+        # Buscar al cliente por su rut
+            Conexion.cursor.execute("SELECT * FROM cliente WHERE rut_cliente = %s", (rut_cliente,))
+            cliente = Conexion.cursor.fetchone()
+        
+            if not cliente:
+                print(f"No se encontró ningún cliente con rut {rut_cliente}.")
+                time.sleep(3)
+                return False
+        
+            print(f"Cliente encontrado - Rut: {cliente[0]}, Nombre: {cliente[2]}, Dirección: {cliente[1]}")
+        
+        # Paso 2: Pedir al usuario que ingrese el id de la boleta o factura
+            id_venta = input("Ingrese el ID de la boleta o factura: ")
+        
+        # Mostrar detalles de la compra (detalle_venta) con nombre del producto
+            print("\nDetalles de la compra:")
+            consulta = """
+                SELECT dv.id_producto, p.nombre, dv.cantidad
+                FROM detalle_venta dv
+                INNER JOIN producto p ON dv.id_producto = p.id_producto
+                WHERE dv.id_venta_boleta = %s OR dv.id_venta_factura = %s
+            """
+            Conexion.cursor.execute(consulta, (id_venta, id_venta))
+            detalles_venta = Conexion.cursor.fetchall()
+        
+            if detalles_venta:
+                print(f"{'ID Producto':<15}{'Nombre Producto':<30}{'Cantidad':<10}")
+                print("="*55)
+                for detalle in detalles_venta:
+                    print(f"{detalle[0]:<15}{detalle[1]:<30}{detalle[2]:<10}")
+            else:
+                print("No se encontraron detalles de la compra.")
+                time.sleep(3)
+        
+        # Esperar a que el usuario presione Enter para continuar
+            input("\nPresione Enter para continuar...")
+        
+            return True
+
+        except Exception as e:
+            print(f'Ha ocurrido el siguiente error: {e}')
+            print('Error de formato porfavor inicie nuevamente el proceso')
+            time.sleep(3)
+            return False
+
+
+    def buscar_cliente_y_compras(self):
+        try:
+            Conexion.getConnection()
+            if Conexion.cursor is None:
+                raise Exception("Error en la conexión a la base de datos.")
+        
+        # Paso 1: Pedir al usuario que ingrese el rut del cliente
+            rut_cliente = input("Ingrese el rut del cliente: ")
+        
+        # Buscar al cliente por su rut
+            Conexion.cursor.execute("SELECT * FROM cliente WHERE rut_cliente = %s", (rut_cliente,))
+            cliente = Conexion.cursor.fetchone()
+        
+            if not cliente:
+                print(f"No se encontró ningún cliente con rut {rut_cliente}.")
+                time.sleep(3)
+                return False
+        
+            print(f"Cliente encontrado - Rut: {cliente[0]}, Nombre: {cliente[2]}, Dirección: {cliente[1]}")
+        
+        # Paso 2: Pedir al usuario que ingrese el id de la boleta o factura
+            id_venta = input("Ingrese el ID de la boleta o factura: ")
+        
+        # Mostrar detalles de la compra (detalle_venta) con nombre del producto
+            print("\nDetalles de la compra:")
+            consulta = """
+                SELECT dv.id_producto, p.nombre, dv.cantidad
+                FROM detalle_venta dv
+                INNER JOIN producto p ON dv.id_producto = p.id_producto
+                WHERE dv.id_venta_boleta = %s OR dv.id_venta_factura = %s
+            """
+            Conexion.cursor.execute(consulta, (id_venta, id_venta))
+            detalles_venta = Conexion.cursor.fetchall()
+        
+            if detalles_venta:
+                print(f"{'ID Producto':<15}{'Nombre Producto':<30}{'Cantidad':<10}")
+                print("="*55)
+                for detalle in detalles_venta:
+                    print(f"{detalle[0]:<15}{detalle[1]:<30}{detalle[2]:<10}")
+            else:
+                print("No se encontraron detalles de la compra.")
+        
+        # Esperar a que el usuario presione Enter para continuar
+            input("\nPresione Enter para continuar...")
+        
+            return True
+
+        except Exception as e:
+            print(f'Ha ocurrido el siguiente error: {e}')
+            time.sleep(3)
+            return False
+
+    def crear_bodega(self):
+        try:
+            Conexion.getConnection()
+            if Conexion.cursor is None:
+                raise Exception("Error en la conexión a la base de datos.")
+        
+        # Solicitar al usuario los datos de la nueva bodega
+            nombre = input("Ingrese el nombre de la nueva bodega: ")
+            direccion = input("Ingrese la dirección de la nueva bodega: ")
+
+        # Consulta para insertar una nueva bodega
+            consulta = """
+                INSERT INTO bodega (nombre, direccion, CREATEDAT, UPDATEDAT) 
+                VALUES (%s, %s, NOW(), NOW())
+            """
+            Conexion.cursor.execute(consulta, (nombre, direccion))
+            Conexion.connection.commit()
+        
+            print("Bodega creada exitosamente.")
+            time.sleep(3)  # Pausa de 3 segundos para efectos demostrativos
+
+        except Exception as e:
+            print(f'Ha ocurrido el siguiente error al crear la bodega: {e}')
+            print('Error de formato porfavor inicie nuevamente el proceso')
+            time.sleep(3)

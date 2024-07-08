@@ -31,7 +31,7 @@ def mostrar_menu_admin():
     table.rows.append(["2", "Opciones Vendedor"])
     table.rows.append(["3", "Administración de Inventario"])
     table.rows.append(["4", "Opciones de Ventas"])
-    table.rows.append(["5", "Informes"])
+    table.rows.append(["5", "Menú de Gestión: Informes y Control de Ventas"])
     table.rows.append(["6", "Volver al inicio de sesión"])
     print(table)
 
@@ -44,7 +44,7 @@ def mostrar_menu_jefe_ventas():
     table.columns.header = ["Opción", "Descripción"]
     table.rows.append(["1", "Administración de Productos"])
     table.rows.append(["2", "Opciones de Ventas"])
-    table.rows.append(["3", "Informes"])
+    table.rows.append(["3", "Menú de Gestión: Informes y Control de Ventas"])
     table.rows.append(["4", "Volver al inicio de sesión"])
     print(table)
 
@@ -114,31 +114,41 @@ def mostrar_submenu_ventas():
     table.rows.append(["2", "Realizar Venta con Factura"])
     table.rows.append(["3", "Realizar Devolución con Factura"])
     table.rows.append(["4", "Realizar Devolución con Boleta"])
-    table.rows.append(["5", "Volver al menú anterior"])
+    table.rows.append(["5", "Mostrar datos vendedor"])
+    table.rows.append(["6", "Buscar clientes"])
+    table.rows.append(["7", "Volver al menú anterior"])
     print(table)
 
 def mostrar_submenu_informes_admin():
     cls()
     print("************************************")
-    print("*   Informes Administración   *")
+    print("*   Menú de Gestión: Informes y Control de Ventas   *")
     print("************************************")
     table = BeautifulTable()
     table.columns.header = ["Opción", "Descripción"]
     table.rows.append(["1", "Informe de Ventas"])
     table.rows.append(["2", "Productos con Caducidad Próxima"])
-    table.rows.append(["3", "Volver al menú anterior"])
+    table.rows.append(["3", "Abrir ventas"])
+    table.rows.append(["4", "Cerrar ventas"])
+    table.rows.append(["5", "Mostrar datos jefe ventas"])
+    table.rows.append(["6", "Crear bodegas"])
+    table.rows.append(["7", "Volver al menú anterior"])
     print(table)
 
 def mostrar_submenu_informes_jefe_ventas():
     cls()
     print("************************************")
-    print("*   Informes Jefe de Ventas   *")
+    print("*   Menú de Gestión: Informes y Control de Ventas   *")
     print("************************************")
     table = BeautifulTable()
     table.columns.header = ["Opción", "Descripción"]
     table.rows.append(["1", "Informe de Ventas"])
     table.rows.append(["2", "Productos con Caducidad Próxima"])
-    table.rows.append(["3", "Volver al menú anterior"])
+    table.rows.append(["3", "Abrir ventas"])
+    table.rows.append(["4", "Cerrar ventas"])
+    table.rows.append(["5", "Mostrar datos jefe ventas"])
+    table.rows.append(["6", "Crear bodegas"])
+    table.rows.append(["7", "Volver al menú anterior"])
     print(table)
 
 def opcion_ficticia():
@@ -309,6 +319,10 @@ def main():
                     elif subopcion == '4':
                         dao.realizarDevolucionBoleta()
                     elif subopcion == '5':
+                        dao.mostrar_mis_datos_vendedor()
+                    elif subopcion == '6':
+                        dao.buscar_cliente_y_compras()
+                    elif subopcion == '7':
                         break
                     else:
                         cls()
@@ -323,6 +337,14 @@ def main():
                     elif subopcion == '2':
                         dao.mostrar_productos_caducidad_proxima()
                     elif subopcion == '3':
+                        dao.abrir_ventas()
+                    elif subopcion == '4':
+                        dao.cerrar_ventas()
+                    elif subopcion == '5':
+                        dao.mostrar_mis_datos_jefe_ventas()
+                    elif subopcion == '6':
+                        dao.crear_bodega()
+                    elif subopcion == '7':
                         break
                     else:
                         cls()
@@ -376,6 +398,10 @@ def main():
                     elif subopcion == '4':
                         dao.realizarDevolucionBoleta()
                     elif subopcion == '5':
+                        dao.mostrar_mis_datos_vendedor()
+                    elif subopcion == '6':
+                        dao.buscar_cliente_y_compras()
+                    elif subopcion == '7':
                         break
                     else:
                         cls()
@@ -390,6 +416,14 @@ def main():
                     elif subopcion == '2':
                         dao.mostrar_productos_caducidad_proxima()
                     elif subopcion == '3':
+                        dao.abrir_ventas()
+                    elif subopcion == '4':
+                        dao.cerrar_ventas()
+                    elif subopcion == '5':
+                        dao.mostrar_mis_datos_jefe_ventas()
+                    elif subopcion == '6':
+                        dao.crear_bodega()
+                    elif subopcion == '7':
                         break
                     else:
                         cls()
@@ -421,6 +455,10 @@ def main():
                     elif subopcion == '4':
                         dao.realizarDevolucionBoleta()
                     elif subopcion == '5':
+                        dao.mostrar_mis_datos_vendedor()
+                    elif subopcion == '6':
+                        dao.buscar_cliente_y_compras()
+                    elif subopcion == '7':
                         break
                     else:
                         cls()

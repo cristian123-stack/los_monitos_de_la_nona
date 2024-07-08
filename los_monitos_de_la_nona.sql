@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1:3308
--- Tiempo de generación: 24-06-2024 a las 19:59:04
+-- Tiempo de generación: 08-07-2024 a las 17:12:50
 -- Versión del servidor: 10.4.28-MariaDB
 -- Versión de PHP: 8.2.4
 
@@ -30,11 +30,12 @@ USE `los_monitos_de_la_nona`;
 --
 
 DROP TABLE IF EXISTS `administrador`;
-CREATE TABLE `administrador` (
-  `id_admin` int(11) NOT NULL,
+CREATE TABLE IF NOT EXISTS `administrador` (
+  `id_admin` int(11) NOT NULL AUTO_INCREMENT,
   `usuario` varchar(45) NOT NULL,
-  `password` varchar(55) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+  `password` varchar(55) NOT NULL,
+  PRIMARY KEY (`id_admin`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Volcado de datos para la tabla `administrador`
@@ -50,21 +51,16 @@ INSERT INTO `administrador` (`id_admin`, `usuario`, `password`) VALUES
 --
 
 DROP TABLE IF EXISTS `bodega`;
-CREATE TABLE `bodega` (
-  `id_bodega` int(11) NOT NULL,
+CREATE TABLE IF NOT EXISTS `bodega` (
+  `id_bodega` int(11) NOT NULL AUTO_INCREMENT,
   `nombre` varchar(55) NOT NULL,
   `direccion` varchar(55) NOT NULL,
   `fk_id_producto` int(11) DEFAULT NULL,
   `CREATEDAT` timestamp NOT NULL DEFAULT current_timestamp(),
-  `UPDATEDAT` timestamp NULL DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Volcado de datos para la tabla `bodega`
---
-
-INSERT INTO `bodega` (`id_bodega`, `nombre`, `direccion`, `fk_id_producto`, `CREATEDAT`, `UPDATEDAT`) VALUES
-(9, 'bodega 1', 'calle 1', NULL, '2024-06-23 21:01:33', '2024-06-23 21:01:33');
+  `UPDATEDAT` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id_bodega`),
+  KEY `bodega_ibfk_1` (`fk_id_producto`)
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -73,20 +69,15 @@ INSERT INTO `bodega` (`id_bodega`, `nombre`, `direccion`, `fk_id_producto`, `CRE
 --
 
 DROP TABLE IF EXISTS `bodega_producto`;
-CREATE TABLE `bodega_producto` (
-  `id` int(11) NOT NULL,
+CREATE TABLE IF NOT EXISTS `bodega_producto` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `fk_id_bodega` int(11) NOT NULL,
   `fk_id_producto` int(11) NOT NULL,
-  `cantidad` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Volcado de datos para la tabla `bodega_producto`
---
-
-INSERT INTO `bodega_producto` (`id`, `fk_id_bodega`, `fk_id_producto`, `cantidad`) VALUES
-(6, 9, 19, 100),
-(7, 9, 20, 100);
+  `cantidad` int(11) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `fk_id_bodega` (`fk_id_bodega`),
+  KEY `fk_id_producto` (`fk_id_producto`)
+) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -95,8 +86,8 @@ INSERT INTO `bodega_producto` (`id`, `fk_id_bodega`, `fk_id_producto`, `cantidad
 --
 
 DROP TABLE IF EXISTS `boleta`;
-CREATE TABLE `boleta` (
-  `id_venta_boleta` int(11) NOT NULL,
+CREATE TABLE IF NOT EXISTS `boleta` (
+  `id_venta_boleta` int(11) NOT NULL AUTO_INCREMENT,
   `fk_id_vendedor` int(11) DEFAULT NULL,
   `fk_id_cliente` int(11) DEFAULT NULL,
   `subtotal` int(11) NOT NULL,
@@ -104,15 +95,11 @@ CREATE TABLE `boleta` (
   `total` int(11) NOT NULL,
   `fecha` date NOT NULL,
   `CREATEDAT` timestamp NOT NULL DEFAULT current_timestamp(),
-  `UPDATEDAT` timestamp NULL DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Volcado de datos para la tabla `boleta`
---
-
-INSERT INTO `boleta` (`id_venta_boleta`, `fk_id_vendedor`, `fk_id_cliente`, `subtotal`, `iva`, `total`, `fecha`, `CREATEDAT`, `UPDATEDAT`) VALUES
-(27, 3, 0, 1000, 190, 1190, '2024-06-24', '2024-06-24 16:09:20', '2024-06-24 16:09:20');
+  `UPDATEDAT` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id_venta_boleta`),
+  KEY `fk_id_vendedor` (`fk_id_vendedor`),
+  KEY `fk_id_cliente` (`fk_id_cliente`)
+) ENGINE=InnoDB AUTO_INCREMENT=34 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -121,27 +108,14 @@ INSERT INTO `boleta` (`id_venta_boleta`, `fk_id_vendedor`, `fk_id_cliente`, `sub
 --
 
 DROP TABLE IF EXISTS `cliente`;
-CREATE TABLE `cliente` (
+CREATE TABLE IF NOT EXISTS `cliente` (
   `rut_cliente` int(11) NOT NULL,
   `direccion_cliente` varchar(50) NOT NULL,
   `nombre_cliente` varchar(50) NOT NULL,
   `CREATEDAT` timestamp NOT NULL DEFAULT current_timestamp(),
-  `UPDATEDAT` timestamp NULL DEFAULT NULL
+  `UPDATEDAT` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`rut_cliente`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Volcado de datos para la tabla `cliente`
---
-
-INSERT INTO `cliente` (`rut_cliente`, `direccion_cliente`, `nombre_cliente`, `CREATEDAT`, `UPDATEDAT`) VALUES
-(0, 'calle 1', 'cholita', '2024-06-23 22:52:23', NULL),
-(2, '', 'holas', '2024-06-24 03:45:46', NULL),
-(14578, 'sda', 'cholita insana', '2024-06-23 23:57:18', NULL),
-(11111111, 'bejamin@gmail.com', 'bnejamin', '2024-06-23 23:11:52', NULL),
-(11123321, 'calle 6', 'violeta', '2024-06-23 23:12:58', NULL),
-(111111111, 'calle 4', 'benjamin', '2024-06-23 23:11:26', NULL),
-(1234567890, 'calle 3', 'crisstian', '2024-06-23 23:09:26', NULL),
-(2147483647, 'calle 1', 'cholita', '2024-06-23 22:51:28', NULL);
 
 -- --------------------------------------------------------
 
@@ -150,24 +124,21 @@ INSERT INTO `cliente` (`rut_cliente`, `direccion_cliente`, `nombre_cliente`, `CR
 --
 
 DROP TABLE IF EXISTS `detalle_venta`;
-CREATE TABLE `detalle_venta` (
-  `id_detalle_venta` int(11) NOT NULL,
+CREATE TABLE IF NOT EXISTS `detalle_venta` (
+  `id_detalle_venta` int(11) NOT NULL AUTO_INCREMENT,
   `id_venta_boleta` int(11) DEFAULT NULL,
   `id_venta_factura` int(11) DEFAULT NULL,
   `id_nota_credito` int(11) DEFAULT NULL,
   `id_producto` int(11) DEFAULT NULL,
   `cantidad` int(11) DEFAULT NULL,
   `CREATEDAT` timestamp NOT NULL DEFAULT current_timestamp(),
-  `UPDATEDAT` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Volcado de datos para la tabla `detalle_venta`
---
-
-INSERT INTO `detalle_venta` (`id_detalle_venta`, `id_venta_boleta`, `id_venta_factura`, `id_nota_credito`, `id_producto`, `cantidad`, `CREATEDAT`, `UPDATEDAT`) VALUES
-(11, 27, NULL, NULL, 20, 1, '2024-06-24 16:09:20', '2024-06-24 16:09:20'),
-(12, 27, NULL, 8, 20, 1, '2024-06-24 16:09:56', '2024-06-24 16:09:56');
+  `UPDATEDAT` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  PRIMARY KEY (`id_detalle_venta`),
+  KEY `id_venta_boleta` (`id_venta_boleta`),
+  KEY `id_venta_factura` (`id_venta_factura`),
+  KEY `id_nota_credito` (`id_nota_credito`),
+  KEY `id_producto` (`id_producto`)
+) ENGINE=InnoDB AUTO_INCREMENT=26 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -176,26 +147,15 @@ INSERT INTO `detalle_venta` (`id_detalle_venta`, `id_venta_boleta`, `id_venta_fa
 --
 
 DROP TABLE IF EXISTS `email_cliente`;
-CREATE TABLE `email_cliente` (
-  `id_email_cliente` int(11) NOT NULL,
+CREATE TABLE IF NOT EXISTS `email_cliente` (
+  `id_email_cliente` int(11) NOT NULL AUTO_INCREMENT,
   `email` varchar(100) NOT NULL,
   `fk_rut_cliente` int(11) DEFAULT NULL,
   `CREATEDAT` timestamp NOT NULL DEFAULT current_timestamp(),
-  `UPDATEDAT` timestamp NULL DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Volcado de datos para la tabla `email_cliente`
---
-
-INSERT INTO `email_cliente` (`id_email_cliente`, `email`, `fk_rut_cliente`, `CREATEDAT`, `UPDATEDAT`) VALUES
-(1, 'emailq@gmail.com', 2147483647, '2024-06-23 22:51:28', NULL),
-(2, '454dsa', 0, '2024-06-23 22:52:23', NULL),
-(3, 'cristian@mail.com', 1234567890, '2024-06-23 23:09:26', NULL),
-(4, 'benja@gmial.com', 111111111, '2024-06-23 23:11:26', NULL),
-(5, 'benjamin@gmail', 11111111, '2024-06-23 23:11:52', NULL),
-(6, 'violeta@gmail.com', 11123321, '2024-06-23 23:12:58', NULL),
-(7, 'hola', 14578, '2024-06-23 23:57:18', NULL);
+  `UPDATEDAT` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id_email_cliente`),
+  KEY `fk_rut_cliente` (`fk_rut_cliente`)
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -204,20 +164,15 @@ INSERT INTO `email_cliente` (`id_email_cliente`, `email`, `fk_rut_cliente`, `CRE
 --
 
 DROP TABLE IF EXISTS `email_jefe_ventas`;
-CREATE TABLE `email_jefe_ventas` (
-  `id_email` int(11) NOT NULL,
+CREATE TABLE IF NOT EXISTS `email_jefe_ventas` (
+  `id_email` int(11) NOT NULL AUTO_INCREMENT,
   `email` varchar(100) NOT NULL,
   `fk_id_jefe_ventas` int(11) DEFAULT NULL,
   `CREATEDAT` timestamp NOT NULL DEFAULT current_timestamp(),
-  `UPDATEDAT` timestamp NULL DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Volcado de datos para la tabla `email_jefe_ventas`
---
-
-INSERT INTO `email_jefe_ventas` (`id_email`, `email`, `fk_id_jefe_ventas`, `CREATEDAT`, `UPDATEDAT`) VALUES
-(3, '', 3, '2024-06-22 02:43:31', '2024-06-22 02:43:31');
+  `UPDATEDAT` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id_email`),
+  KEY `fk_id_jefe_ventas` (`fk_id_jefe_ventas`)
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -226,21 +181,15 @@ INSERT INTO `email_jefe_ventas` (`id_email`, `email`, `fk_id_jefe_ventas`, `CREA
 --
 
 DROP TABLE IF EXISTS `email_proveedor`;
-CREATE TABLE `email_proveedor` (
-  `id_email` int(11) NOT NULL,
+CREATE TABLE IF NOT EXISTS `email_proveedor` (
+  `id_email` int(11) NOT NULL AUTO_INCREMENT,
   `email` varchar(100) NOT NULL,
   `fk_rut_prov` varchar(10) DEFAULT NULL,
   `CREATEDAT` timestamp NOT NULL DEFAULT current_timestamp(),
-  `UPDATEDAT` timestamp NULL DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Volcado de datos para la tabla `email_proveedor`
---
-
-INSERT INTO `email_proveedor` (`id_email`, `email`, `fk_rut_prov`, `CREATEDAT`, `UPDATEDAT`) VALUES
-(4, 'cristian@gmail.com', '19346666-4', '2024-06-23 19:13:53', '2024-06-23 19:13:53'),
-(5, 'alejo@gmail.com', '11745778-8', '2024-06-23 19:19:44', '2024-06-23 19:19:44');
+  `UPDATEDAT` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id_email`),
+  KEY `fk_rut_prov` (`fk_rut_prov`)
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -249,21 +198,15 @@ INSERT INTO `email_proveedor` (`id_email`, `email`, `fk_rut_prov`, `CREATEDAT`, 
 --
 
 DROP TABLE IF EXISTS `email_vendedor`;
-CREATE TABLE `email_vendedor` (
-  `id_email` int(11) NOT NULL,
+CREATE TABLE IF NOT EXISTS `email_vendedor` (
+  `id_email` int(11) NOT NULL AUTO_INCREMENT,
   `email` varchar(100) NOT NULL,
   `fk_id_vendedor` int(11) DEFAULT NULL,
   `CREATEDAT` timestamp NOT NULL DEFAULT current_timestamp(),
-  `UPDATEDAT` timestamp NULL DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Volcado de datos para la tabla `email_vendedor`
---
-
-INSERT INTO `email_vendedor` (`id_email`, `email`, `fk_id_vendedor`, `CREATEDAT`, `UPDATEDAT`) VALUES
-(2, '', 2, '2024-06-22 02:42:20', '2024-06-22 02:42:20'),
-(3, 'emilio@gmail.com', 3, '2024-06-23 21:04:34', '2024-06-23 21:04:34');
+  `UPDATEDAT` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id_email`),
+  KEY `fk_id_vendedor` (`fk_id_vendedor`)
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -272,8 +215,8 @@ INSERT INTO `email_vendedor` (`id_email`, `email`, `fk_id_vendedor`, `CREATEDAT`
 --
 
 DROP TABLE IF EXISTS `factura`;
-CREATE TABLE `factura` (
-  `id_venta_factura` int(11) NOT NULL,
+CREATE TABLE IF NOT EXISTS `factura` (
+  `id_venta_factura` int(11) NOT NULL AUTO_INCREMENT,
   `fk_id_vendedor` int(11) DEFAULT NULL,
   `fk_id_cliente` int(11) DEFAULT NULL,
   `subtotal` int(11) NOT NULL,
@@ -281,8 +224,11 @@ CREATE TABLE `factura` (
   `total` int(11) NOT NULL,
   `fecha` date NOT NULL,
   `CREATEDAT` timestamp NOT NULL DEFAULT current_timestamp(),
-  `UPDATEDAT` timestamp NULL DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+  `UPDATEDAT` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id_venta_factura`),
+  KEY `fk_id_vendedor` (`fk_id_vendedor`),
+  KEY `fk_id_cliente` (`fk_id_cliente`)
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -291,22 +237,17 @@ CREATE TABLE `factura` (
 --
 
 DROP TABLE IF EXISTS `jefe_ventas`;
-CREATE TABLE `jefe_ventas` (
-  `id_jefe_ventas` int(11) NOT NULL,
+CREATE TABLE IF NOT EXISTS `jefe_ventas` (
+  `id_jefe_ventas` int(11) NOT NULL AUTO_INCREMENT,
   `nombre` varchar(45) DEFAULT NULL,
   `password` varchar(50) DEFAULT NULL,
   `fk_id_admin` int(11) DEFAULT NULL,
   `CREATEDAT` timestamp NOT NULL DEFAULT current_timestamp(),
   `UPDATEDAT` timestamp NULL DEFAULT NULL,
-  `state_at` char(1) NOT NULL CHECK (`state_at` in ('Y','N'))
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Volcado de datos para la tabla `jefe_ventas`
---
-
-INSERT INTO `jefe_ventas` (`id_jefe_ventas`, `nombre`, `password`, `fk_id_admin`, `CREATEDAT`, `UPDATEDAT`, `state_at`) VALUES
-(3, 'cristian', '202cb962ac59075b964b07152d234b70', 1, '2024-06-22 02:43:31', '2024-06-22 02:43:31', 'y');
+  `state_at` char(1) NOT NULL CHECK (`state_at` in ('Y','N')),
+  PRIMARY KEY (`id_jefe_ventas`),
+  KEY `fk_admin_id` (`fk_id_admin`)
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -315,8 +256,8 @@ INSERT INTO `jefe_ventas` (`id_jefe_ventas`, `nombre`, `password`, `fk_id_admin`
 --
 
 DROP TABLE IF EXISTS `nota_credito`;
-CREATE TABLE `nota_credito` (
-  `id_nota_credito` int(11) NOT NULL,
+CREATE TABLE IF NOT EXISTS `nota_credito` (
+  `id_nota_credito` int(11) NOT NULL AUTO_INCREMENT,
   `fk_id_vendedor` int(11) DEFAULT NULL,
   `fk_id_cliente` int(11) DEFAULT NULL,
   `fk_id_boleta` int(11) DEFAULT NULL,
@@ -327,15 +268,13 @@ CREATE TABLE `nota_credito` (
   `fecha` date DEFAULT NULL,
   `motivo` varchar(255) NOT NULL,
   `CREATEDAT` timestamp NOT NULL DEFAULT current_timestamp(),
-  `UPDATEDAT` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Volcado de datos para la tabla `nota_credito`
---
-
-INSERT INTO `nota_credito` (`id_nota_credito`, `fk_id_vendedor`, `fk_id_cliente`, `fk_id_boleta`, `fk_id_factura`, `subtotal`, `iva`, `total`, `fecha`, `motivo`, `CREATEDAT`, `UPDATEDAT`) VALUES
-(8, 3, 0, 27, NULL, 1000, 190, 1190, '2024-06-24', 'vencido', '2024-06-24 16:09:56', '2024-06-24 16:09:56');
+  `UPDATEDAT` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  PRIMARY KEY (`id_nota_credito`),
+  KEY `fk_id_vendedor` (`fk_id_vendedor`),
+  KEY `fk_id_cliente` (`fk_id_cliente`),
+  KEY `fk_id_boleta` (`fk_id_boleta`),
+  KEY `fk_id_factura` (`fk_id_factura`)
+) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -344,8 +283,8 @@ INSERT INTO `nota_credito` (`id_nota_credito`, `fk_id_vendedor`, `fk_id_cliente`
 --
 
 DROP TABLE IF EXISTS `producto`;
-CREATE TABLE `producto` (
-  `id_producto` int(11) NOT NULL,
+CREATE TABLE IF NOT EXISTS `producto` (
+  `id_producto` int(11) NOT NULL AUTO_INCREMENT,
   `nombre` varchar(100) NOT NULL,
   `cantidad` int(11) NOT NULL,
   `valor_unitario` int(11) NOT NULL,
@@ -353,16 +292,10 @@ CREATE TABLE `producto` (
   `fecha_elaboracion` date NOT NULL,
   `fecha_caducidad` date NOT NULL,
   `CREATEDAT` timestamp NOT NULL DEFAULT current_timestamp(),
-  `UPDATEDAT` timestamp NULL DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Volcado de datos para la tabla `producto`
---
-
-INSERT INTO `producto` (`id_producto`, `nombre`, `cantidad`, `valor_unitario`, `fk_rut_prov`, `fecha_elaboracion`, `fecha_caducidad`, `CREATEDAT`, `UPDATEDAT`) VALUES
-(19, 'chocolate insano', 0, 1500, '11745778-8', '2023-02-02', '2023-03-02', '2024-06-24 00:21:46', '2024-06-24 00:21:46'),
-(20, 'coca cola 1l ', 7, 1000, '19346666-4', '2023-01-01', '2023-02-02', '2024-06-24 00:22:42', '2024-06-24 00:22:42');
+  `UPDATEDAT` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id_producto`),
+  KEY `fk_rut_prov` (`fk_rut_prov`)
+) ENGINE=InnoDB AUTO_INCREMENT=27 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -371,21 +304,14 @@ INSERT INTO `producto` (`id_producto`, `nombre`, `cantidad`, `valor_unitario`, `
 --
 
 DROP TABLE IF EXISTS `proveedor`;
-CREATE TABLE `proveedor` (
+CREATE TABLE IF NOT EXISTS `proveedor` (
   `rut_prov` varchar(10) NOT NULL,
   `nombre` varchar(55) NOT NULL,
   `direccion_prov` varchar(55) NOT NULL,
   `CREATEDAT` timestamp NOT NULL DEFAULT current_timestamp(),
-  `UPDATEDAT` timestamp NULL DEFAULT NULL
+  `UPDATEDAT` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`rut_prov`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Volcado de datos para la tabla `proveedor`
---
-
-INSERT INTO `proveedor` (`rut_prov`, `nombre`, `direccion_prov`, `CREATEDAT`, `UPDATEDAT`) VALUES
-('11745778-8', 'alejo', '123', '2024-06-23 19:19:36', '2024-06-23 19:19:36'),
-('19346666-4', 'cristian', 'calle 3', '2024-06-23 19:13:47', '2024-06-23 19:13:47');
 
 -- --------------------------------------------------------
 
@@ -394,26 +320,15 @@ INSERT INTO `proveedor` (`rut_prov`, `nombre`, `direccion_prov`, `CREATEDAT`, `U
 --
 
 DROP TABLE IF EXISTS `telefono_cliente`;
-CREATE TABLE `telefono_cliente` (
-  `id_telefono_cliente` int(11) NOT NULL,
+CREATE TABLE IF NOT EXISTS `telefono_cliente` (
+  `id_telefono_cliente` int(11) NOT NULL AUTO_INCREMENT,
   `telefono` varchar(20) NOT NULL,
   `fk_rut_cliente` int(11) DEFAULT NULL,
   `CREATEDAT` timestamp NOT NULL DEFAULT current_timestamp(),
-  `UPDATEDAT` timestamp NULL DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Volcado de datos para la tabla `telefono_cliente`
---
-
-INSERT INTO `telefono_cliente` (`id_telefono_cliente`, `telefono`, `fk_rut_cliente`, `CREATEDAT`, `UPDATEDAT`) VALUES
-(1, '11554', 2147483647, '2024-06-23 22:51:28', NULL),
-(2, '465445', 0, '2024-06-23 22:52:23', NULL),
-(3, '+56988888', 1234567890, '2024-06-23 23:09:26', NULL),
-(4, '554446545', 111111111, '2024-06-23 23:11:26', NULL),
-(5, '4645546', 11111111, '2024-06-23 23:11:52', NULL),
-(6, '45645456', 11123321, '2024-06-23 23:12:58', NULL),
-(7, '5546', 14578, '2024-06-23 23:57:18', NULL);
+  `UPDATEDAT` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id_telefono_cliente`),
+  KEY `fk_rut_cliente` (`fk_rut_cliente`)
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -422,20 +337,15 @@ INSERT INTO `telefono_cliente` (`id_telefono_cliente`, `telefono`, `fk_rut_clien
 --
 
 DROP TABLE IF EXISTS `telefono_jefe_ventas`;
-CREATE TABLE `telefono_jefe_ventas` (
-  `id_telefono` int(11) NOT NULL,
+CREATE TABLE IF NOT EXISTS `telefono_jefe_ventas` (
+  `id_telefono` int(11) NOT NULL AUTO_INCREMENT,
   `telefono` varchar(20) NOT NULL,
   `fk_id_jefe_ventas` int(11) DEFAULT NULL,
   `CREATEDAT` timestamp NOT NULL DEFAULT current_timestamp(),
-  `UPDATEDAT` timestamp NULL DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Volcado de datos para la tabla `telefono_jefe_ventas`
---
-
-INSERT INTO `telefono_jefe_ventas` (`id_telefono`, `telefono`, `fk_id_jefe_ventas`, `CREATEDAT`, `UPDATEDAT`) VALUES
-(3, '', 3, '2024-06-22 02:43:31', '2024-06-22 02:43:31');
+  `UPDATEDAT` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id_telefono`),
+  KEY `fk_id_jefe_ventas` (`fk_id_jefe_ventas`)
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -444,21 +354,15 @@ INSERT INTO `telefono_jefe_ventas` (`id_telefono`, `telefono`, `fk_id_jefe_venta
 --
 
 DROP TABLE IF EXISTS `telefono_proveedor`;
-CREATE TABLE `telefono_proveedor` (
-  `id_telefono` int(11) NOT NULL,
+CREATE TABLE IF NOT EXISTS `telefono_proveedor` (
+  `id_telefono` int(11) NOT NULL AUTO_INCREMENT,
   `telefono` varchar(20) NOT NULL,
   `fk_rut_prov` varchar(10) DEFAULT NULL,
   `CREATEDAT` timestamp NOT NULL DEFAULT current_timestamp(),
-  `UPDATEDAT` timestamp NULL DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Volcado de datos para la tabla `telefono_proveedor`
---
-
-INSERT INTO `telefono_proveedor` (`id_telefono`, `telefono`, `fk_rut_prov`, `CREATEDAT`, `UPDATEDAT`) VALUES
-(4, '+569888', '19346666-4', '2024-06-23 19:13:56', '2024-06-23 19:13:56'),
-(5, '122222', '11745778-8', '2024-06-23 19:19:48', '2024-06-23 19:19:48');
+  `UPDATEDAT` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id_telefono`),
+  KEY `fk_rut_prov` (`fk_rut_prov`)
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -467,21 +371,15 @@ INSERT INTO `telefono_proveedor` (`id_telefono`, `telefono`, `fk_rut_prov`, `CRE
 --
 
 DROP TABLE IF EXISTS `telefono_vendedor`;
-CREATE TABLE `telefono_vendedor` (
-  `id_telefono` int(11) NOT NULL,
+CREATE TABLE IF NOT EXISTS `telefono_vendedor` (
+  `id_telefono` int(11) NOT NULL AUTO_INCREMENT,
   `telefono` varchar(20) NOT NULL,
   `fk_id_vendedor` int(11) DEFAULT NULL,
   `CREATEDAT` timestamp NOT NULL DEFAULT current_timestamp(),
-  `UPDATEDAT` timestamp NULL DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Volcado de datos para la tabla `telefono_vendedor`
---
-
-INSERT INTO `telefono_vendedor` (`id_telefono`, `telefono`, `fk_id_vendedor`, `CREATEDAT`, `UPDATEDAT`) VALUES
-(2, '', 2, '2024-06-22 02:42:20', '2024-06-22 02:42:20'),
-(3, '+5698787878', 3, '2024-06-23 21:04:34', '2024-06-23 21:04:34');
+  `UPDATEDAT` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id_telefono`),
+  KEY `fk_id_vendedor` (`fk_id_vendedor`)
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -490,285 +388,17 @@ INSERT INTO `telefono_vendedor` (`id_telefono`, `telefono`, `fk_id_vendedor`, `C
 --
 
 DROP TABLE IF EXISTS `vendedor`;
-CREATE TABLE `vendedor` (
-  `id_vendedor` int(11) NOT NULL,
+CREATE TABLE IF NOT EXISTS `vendedor` (
+  `id_vendedor` int(11) NOT NULL AUTO_INCREMENT,
   `nombre` varchar(45) NOT NULL,
   `fk_id_admin` int(11) DEFAULT NULL,
   `password` varchar(50) NOT NULL,
   `state_at` char(1) NOT NULL CHECK (`state_at` in ('Y','N')),
   `CREATEDAT` timestamp NOT NULL DEFAULT current_timestamp(),
-  `UPDATEDAT` timestamp NULL DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Volcado de datos para la tabla `vendedor`
---
-
-INSERT INTO `vendedor` (`id_vendedor`, `nombre`, `fk_id_admin`, `password`, `state_at`, `CREATEDAT`, `UPDATEDAT`) VALUES
-(2, 'mia', 1, '202cb962ac59075b964b07152d234b70', 'y', '2024-06-22 02:42:20', '2024-06-22 02:42:20'),
-(3, 'emilio', 1, '202cb962ac59075b964b07152d234b70', 'y', '2024-06-23 21:04:34', '2024-06-23 21:04:34');
-
---
--- Índices para tablas volcadas
---
-
---
--- Indices de la tabla `administrador`
---
-ALTER TABLE `administrador`
-  ADD PRIMARY KEY (`id_admin`);
-
---
--- Indices de la tabla `bodega`
---
-ALTER TABLE `bodega`
-  ADD PRIMARY KEY (`id_bodega`),
-  ADD KEY `bodega_ibfk_1` (`fk_id_producto`);
-
---
--- Indices de la tabla `bodega_producto`
---
-ALTER TABLE `bodega_producto`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `fk_id_bodega` (`fk_id_bodega`),
-  ADD KEY `fk_id_producto` (`fk_id_producto`);
-
---
--- Indices de la tabla `boleta`
---
-ALTER TABLE `boleta`
-  ADD PRIMARY KEY (`id_venta_boleta`),
-  ADD KEY `fk_id_vendedor` (`fk_id_vendedor`),
-  ADD KEY `fk_id_cliente` (`fk_id_cliente`);
-
---
--- Indices de la tabla `cliente`
---
-ALTER TABLE `cliente`
-  ADD PRIMARY KEY (`rut_cliente`);
-
---
--- Indices de la tabla `detalle_venta`
---
-ALTER TABLE `detalle_venta`
-  ADD PRIMARY KEY (`id_detalle_venta`),
-  ADD KEY `id_venta_boleta` (`id_venta_boleta`),
-  ADD KEY `id_venta_factura` (`id_venta_factura`),
-  ADD KEY `id_nota_credito` (`id_nota_credito`),
-  ADD KEY `id_producto` (`id_producto`);
-
---
--- Indices de la tabla `email_cliente`
---
-ALTER TABLE `email_cliente`
-  ADD PRIMARY KEY (`id_email_cliente`),
-  ADD KEY `fk_rut_cliente` (`fk_rut_cliente`);
-
---
--- Indices de la tabla `email_jefe_ventas`
---
-ALTER TABLE `email_jefe_ventas`
-  ADD PRIMARY KEY (`id_email`),
-  ADD KEY `fk_id_jefe_ventas` (`fk_id_jefe_ventas`);
-
---
--- Indices de la tabla `email_proveedor`
---
-ALTER TABLE `email_proveedor`
-  ADD PRIMARY KEY (`id_email`),
-  ADD KEY `fk_rut_prov` (`fk_rut_prov`);
-
---
--- Indices de la tabla `email_vendedor`
---
-ALTER TABLE `email_vendedor`
-  ADD PRIMARY KEY (`id_email`),
-  ADD KEY `fk_id_vendedor` (`fk_id_vendedor`);
-
---
--- Indices de la tabla `factura`
---
-ALTER TABLE `factura`
-  ADD PRIMARY KEY (`id_venta_factura`),
-  ADD KEY `fk_id_vendedor` (`fk_id_vendedor`),
-  ADD KEY `fk_id_cliente` (`fk_id_cliente`);
-
---
--- Indices de la tabla `jefe_ventas`
---
-ALTER TABLE `jefe_ventas`
-  ADD PRIMARY KEY (`id_jefe_ventas`),
-  ADD KEY `fk_admin_id` (`fk_id_admin`);
-
---
--- Indices de la tabla `nota_credito`
---
-ALTER TABLE `nota_credito`
-  ADD PRIMARY KEY (`id_nota_credito`),
-  ADD KEY `fk_id_vendedor` (`fk_id_vendedor`),
-  ADD KEY `fk_id_cliente` (`fk_id_cliente`),
-  ADD KEY `fk_id_boleta` (`fk_id_boleta`),
-  ADD KEY `fk_id_factura` (`fk_id_factura`);
-
---
--- Indices de la tabla `producto`
---
-ALTER TABLE `producto`
-  ADD PRIMARY KEY (`id_producto`),
-  ADD KEY `fk_rut_prov` (`fk_rut_prov`);
-
---
--- Indices de la tabla `proveedor`
---
-ALTER TABLE `proveedor`
-  ADD PRIMARY KEY (`rut_prov`);
-
---
--- Indices de la tabla `telefono_cliente`
---
-ALTER TABLE `telefono_cliente`
-  ADD PRIMARY KEY (`id_telefono_cliente`),
-  ADD KEY `fk_rut_cliente` (`fk_rut_cliente`);
-
---
--- Indices de la tabla `telefono_jefe_ventas`
---
-ALTER TABLE `telefono_jefe_ventas`
-  ADD PRIMARY KEY (`id_telefono`),
-  ADD KEY `fk_id_jefe_ventas` (`fk_id_jefe_ventas`);
-
---
--- Indices de la tabla `telefono_proveedor`
---
-ALTER TABLE `telefono_proveedor`
-  ADD PRIMARY KEY (`id_telefono`),
-  ADD KEY `fk_rut_prov` (`fk_rut_prov`);
-
---
--- Indices de la tabla `telefono_vendedor`
---
-ALTER TABLE `telefono_vendedor`
-  ADD PRIMARY KEY (`id_telefono`),
-  ADD KEY `fk_id_vendedor` (`fk_id_vendedor`);
-
---
--- Indices de la tabla `vendedor`
---
-ALTER TABLE `vendedor`
-  ADD PRIMARY KEY (`id_vendedor`),
-  ADD KEY `fk_id_admin` (`fk_id_admin`);
-
---
--- AUTO_INCREMENT de las tablas volcadas
---
-
---
--- AUTO_INCREMENT de la tabla `administrador`
---
-ALTER TABLE `administrador`
-  MODIFY `id_admin` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
-
---
--- AUTO_INCREMENT de la tabla `bodega`
---
-ALTER TABLE `bodega`
-  MODIFY `id_bodega` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
-
---
--- AUTO_INCREMENT de la tabla `bodega_producto`
---
-ALTER TABLE `bodega_producto`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
-
---
--- AUTO_INCREMENT de la tabla `boleta`
---
-ALTER TABLE `boleta`
-  MODIFY `id_venta_boleta` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=28;
-
---
--- AUTO_INCREMENT de la tabla `detalle_venta`
---
-ALTER TABLE `detalle_venta`
-  MODIFY `id_detalle_venta` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
-
---
--- AUTO_INCREMENT de la tabla `email_cliente`
---
-ALTER TABLE `email_cliente`
-  MODIFY `id_email_cliente` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
-
---
--- AUTO_INCREMENT de la tabla `email_jefe_ventas`
---
-ALTER TABLE `email_jefe_ventas`
-  MODIFY `id_email` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
-
---
--- AUTO_INCREMENT de la tabla `email_proveedor`
---
-ALTER TABLE `email_proveedor`
-  MODIFY `id_email` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
-
---
--- AUTO_INCREMENT de la tabla `email_vendedor`
---
-ALTER TABLE `email_vendedor`
-  MODIFY `id_email` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
-
---
--- AUTO_INCREMENT de la tabla `factura`
---
-ALTER TABLE `factura`
-  MODIFY `id_venta_factura` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
-
---
--- AUTO_INCREMENT de la tabla `jefe_ventas`
---
-ALTER TABLE `jefe_ventas`
-  MODIFY `id_jefe_ventas` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
-
---
--- AUTO_INCREMENT de la tabla `nota_credito`
---
-ALTER TABLE `nota_credito`
-  MODIFY `id_nota_credito` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
-
---
--- AUTO_INCREMENT de la tabla `producto`
---
-ALTER TABLE `producto`
-  MODIFY `id_producto` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
-
---
--- AUTO_INCREMENT de la tabla `telefono_cliente`
---
-ALTER TABLE `telefono_cliente`
-  MODIFY `id_telefono_cliente` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
-
---
--- AUTO_INCREMENT de la tabla `telefono_jefe_ventas`
---
-ALTER TABLE `telefono_jefe_ventas`
-  MODIFY `id_telefono` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
-
---
--- AUTO_INCREMENT de la tabla `telefono_proveedor`
---
-ALTER TABLE `telefono_proveedor`
-  MODIFY `id_telefono` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
-
---
--- AUTO_INCREMENT de la tabla `telefono_vendedor`
---
-ALTER TABLE `telefono_vendedor`
-  MODIFY `id_telefono` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
-
---
--- AUTO_INCREMENT de la tabla `vendedor`
---
-ALTER TABLE `vendedor`
-  MODIFY `id_vendedor` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  `UPDATEDAT` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id_vendedor`),
+  KEY `fk_id_admin` (`fk_id_admin`)
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Restricciones para tablas volcadas
